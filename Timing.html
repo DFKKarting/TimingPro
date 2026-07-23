@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0d0d0d">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Time Schedule IAME Benelux Collective Test</title>
     <link rel="icon" type="image/png" href="DFK ZWT.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,6 +16,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
+            background: #0d0d0d; /* Fallback so any sliver near the edges is dark, never white */
             overflow: hidden; /* The countdown board fills the screen exactly - no page scroll */
         }
         body {
@@ -126,8 +129,7 @@
 #fullscreen-container {
     display: flex;
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0; /* Stretch fully to all edges, including under notch/home-bar safe areas */
     width: 100%;
     height: 100%;
     height: 100dvh; /* Accounts for mobile browser chrome so nothing gets cut off/needs scrolling */
@@ -395,8 +397,8 @@ margin-top: -0px;
     #current-time-section { margin-bottom: 0.5vh; }
     .fullscreen-timer-current-time { padding: 1vh 1.5vh; }
     .fullscreen-timer-current-time h2 { font-size: 2vh; }
-    .fullscreen-timer-current-time .time { font-size: 4.5vh; }
-    .fullscreen-timer-current-time img { height: 4.5vh; margin: 0 0.6vh; }
+    .fullscreen-timer-current-time .time { font-size: 4vh; }
+    .fullscreen-timer-current-time img { height: 4.5vh; max-width: 16vw; margin: 0 0.6vh; flex-shrink: 1; object-fit: contain; }
 
     #fullscreen-next-session { padding: 1.5vh; }
     #fullscreen-next-session h2 { font-size: clamp(14px, 3vh, 26px); margin-bottom: 0.5vh; }
