@@ -1509,6 +1509,10 @@ margin-top: -0px;
 
         loadSessions();
         subscribeToScheduleChanges();
+        // Belt-and-suspenders: also just re-fetch periodically. This
+        // guarantees every screen stays in sync within a few seconds even
+        // if the realtime push doesn't arrive for some reason.
+        setInterval(loadSessions, 5000);
 
     </script>
 </body>
