@@ -1193,6 +1193,9 @@ margin-top: -0px;
 
         const SCHEDULE_TIME_RANGE_FRAGMENT_RE = /\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}/;
         const SCHEDULE_DURATION_RE = /(\d+)\s*(?:min|minutes|')\s*(\+\s*1\s*lap)?/i;
+        // Strips the duration/lap suffix from a name fragment for display,
+        // e.g. "Qualifying Heat / 10 min + 1 Lap" -> "Qualifying Heat".
+        const SCHEDULE_DURATION_STRIP_RE = /\s*[\/\-]?\s*\d+\s*(?:'|min\b|minutes\b)\s*(?:\+\s*\d*\s*laps?\b)?\s*\*?/gi;
         // Session/class text containing any of these (case-insensitive) is
         // treated as logistics, not an on-track session, and left out.
         const SCHEDULE_SKIP_KEYWORDS = ["voucher", "scan tyre", "tyres scanning", "mounting", "admin",
@@ -1309,7 +1312,14 @@ margin-top: -0px;
             }
             if (!kept.length) return [];
 
+            // "name" keeps the duration/lap text (e.g. "/ 10 min + 1 Lap") so
+            // parseScheduleDurationMinutes can still read it below; the actual
+            // name shown on the site strips that part out.
             const name = [...new Set(kept)].join(" | ").replace(/,/g, " ");
+            const displayFragments = kept
+                .map(t => t.replace(SCHEDULE_DURATION_STRIP_RE, "").trim())
+                .filter(Boolean);
+            const displayName = ([...new Set(displayFragments)].join(" | ") || name).replace(/,/g, " ");
             let start, end, guessed = false, pregridClosing = null;
 
             if (times.length >= 2 && scheduleTimeToMinutes(times[1]) > scheduleTimeToMinutes(times[0])) {
@@ -1334,13 +1344,13 @@ margin-top: -0px;
             if (pregridClosing) {
                 return [{
                     date: currentDate || "",
-                    name: `Pre-grid Open | ${name}`,
+                    name: `Pre-grid Open | ${displayName}`,
                     startTime: addMinutesToTime(pregridClosing, -PRE_GRID_OPEN_MINUTES_BEFORE_CLOSE),
                     endTime: pregridClosing,
                     guessed: !currentDate,
                 }];
             }
-            return [{ date: currentDate || "", name, startTime: start, endTime: end, guessed: guessed || !currentDate }];
+            return [{ date: currentDate || "", name: displayName, startTime: start, endTime: end, guessed: guessed || !currentDate }];
         }
 
         function scheduleTimeToMinutes(hhmm) {
