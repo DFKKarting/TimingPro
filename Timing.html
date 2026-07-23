@@ -198,6 +198,7 @@
     justify-content: center;
     align-items: center;
     flex-grow: 1; /* Allow to grow */
+    min-height: 0; /* Allow this section to shrink too, not just grow */
 }
 
 #fullscreen-next-session {
@@ -242,6 +243,10 @@
     font-weight: 600;
     font-size: 8vh;
     margin: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Bottom Section - Current and Upcoming */
@@ -301,6 +306,10 @@ margin-top: -0px;
     font-weight: 600;
     font-size: 3vh;
     margin: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Upcoming Sessions Timer */
@@ -357,6 +366,10 @@ margin-top: -0px;
     font-size: 2.5vh;
     flex-grow: 1;
     text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
 }
 
 .upcoming-session-item .time {
@@ -367,24 +380,36 @@ margin-top: -0px;
     white-space: nowrap;
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments - phones are tall and narrow, so vertical space
+   (not horizontal) is the scarce resource. Keep boxes side-by-side (stacking
+   them would double the height needed) and shrink everything to fit one
+   screen with no scrolling. */
 @media (max-width: 768px) {
-    #bottom-timers-container,
-    #fullscreen-container {
-        flex-direction: column;
-        align-items: center;
-    }
+    #current-time-section { margin-bottom: 0.5vh; }
+    .fullscreen-timer-current-time { padding: 1vh 1.5vh; }
+    .fullscreen-timer-current-time h2 { font-size: 2vh; }
+    .fullscreen-timer-current-time .time { font-size: 4.5vh; }
+    .fullscreen-timer-current-time img { height: 4.5vh; margin: 0 0.6vh; }
 
-    #fullscreen-current-session,
-    #upcoming-sessions-container,
-    #fullscreen-next-session {
-        width: 95%;
-    }
-    /* Ensure equal height on smaller screens */
+    #fullscreen-next-session { padding: 1.5vh; }
+    #fullscreen-next-session h2 { font-size: clamp(14px, 3vh, 26px); margin-bottom: 0.5vh; }
+    #fullscreen-next-session .time { font-size: 6vh; }
+    #fullscreen-next-session p { font-size: 3.5vh; }
+
+    #bottom-timers-container { gap: 3%; margin-bottom: 1vh; }
     #fullscreen-current-session,
     #upcoming-sessions-container {
-        height: auto;
+        width: 49%;
+        height: 20vh;
+        padding: 1vh;
     }
+    #fullscreen-current-session h2,
+    #upcoming-sessions-container h2 { font-size: clamp(12px, 2.2vh, 20px); margin-bottom: 0.5vh; }
+    #fullscreen-current-session .time { font-size: 4vh; }
+    #fullscreen-current-session p { font-size: 1.8vh; }
+    .upcoming-session-item { margin-bottom: 0.5vh; padding: 0.5vh; }
+    .upcoming-session-item .session-name,
+    .upcoming-session-item .time { font-size: 1.7vh; }
 }
 
         /* Table Styles - No Toggle */
