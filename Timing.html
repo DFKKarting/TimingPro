@@ -761,9 +761,12 @@ margin-top: -0px;
         function subscribeToScheduleChanges() {
             supabaseClient
                 .channel("schedule-changes")
-                .on("postgres_changes", { event: "UPDATE", schema: "public", table: "schedule", filter: "id=eq.1" }, payload => {
-                    sessions = payload.new.sessions || [];
-                    updateSchedule();
+                // Re-fetch on any change notification instead of trusting the
+                // realtime payload's row data directly - reliable regardless
+                // of replica identity settings, and keeps every open tab/device
+                // in sync without needing a manual refresh.
+                .on("postgres_changes", { event: "UPDATE", schema: "public", table: "schedule", filter: "id=eq.1" }, () => {
+                    loadSessions();
                 })
                 .subscribe();
         }
@@ -1317,7 +1320,7 @@ margin-top: -0px;
             // name shown on the site strips that part out.
             const name = [...new Set(kept)].join(" | ").replace(/,/g, " ");
             const displayFragments = kept
-                .map(t => t.replace(SCHEDULE_DURATION_STRIP_RE, "").trim())
+                .map(t => t.replace(SCHEDULE_DURATION_STRIP_RE, "").replace(/\([^)]*\)/g, "").replace(/\s+/g, " ").trim())
                 .filter(Boolean);
             const displayName = ([...new Set(displayFragments)].join(" | ") || name).replace(/,/g, " ");
             let start, end, guessed = false, pregridClosing = null;
