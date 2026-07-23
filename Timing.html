@@ -270,14 +270,14 @@ margin-bottom: 3%;
 #fullscreen-current-session {
     border: 2px solid #42f54e;
     border-radius: 14px;
-    padding: 2vh; /* Restore padding */
+    padding: 1.2vh; /* Restore padding */
     width: 49%;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6), 0 0 20px rgba(66, 245, 78, 0.15);
     text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: space-between; /* Distribute space */
-    height: 25vh;
+    height: 28vh;
     overflow: hidden; /* JS shrinks the name to fit; this is just a safety net */
     background: linear-gradient(160deg, #1a1a1a, #050505);
 margin-top: -0px;
@@ -289,7 +289,7 @@ margin-top: -0px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
     font-size: 28px;
-    margin: 0 0 1vh 0;
+    margin: 0 0 0.4vh 0;
 }
 
 #fullscreen-current-session .time {
@@ -315,14 +315,14 @@ margin-top: -0px;
 #upcoming-sessions-container {
     border: 2px solid #f54242;
     border-radius: 14px;
-    padding: 2vh; /* Restore padding */
+    padding: 1.2vh; /* Restore padding */
     width: 49%;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 66, 66, 0.15);
     text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: space-between; /* Distribute space */
-    height: 25vh; /* Keep height */
+    height: 28vh; /* Keep height */
     overflow: hidden; /* Never spill outside the box, even with long names */
     background: linear-gradient(160deg, #363636, #262626);
 }
@@ -333,7 +333,7 @@ margin-top: -0px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
     font-size: 28px;
-    margin: 0 0 1vh 0;
+    margin: 0 0 0.4vh 0;
 }
 
 #upcoming-sessions-list {
@@ -347,8 +347,8 @@ margin-top: -0px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1vh;
-    padding: 1vh;
+    margin-bottom: 0.4vh;
+    padding: 0.4vh;
     border-bottom: 1px solid #555;
     transition: background-color 0.2s ease;
 }
@@ -402,15 +402,15 @@ margin-top: -0px;
     #fullscreen-current-session,
     #upcoming-sessions-container {
         width: 49%;
-        height: 20vh;
-        padding: 1vh;
+        height: 23vh;
+        padding: 0.7vh;
     }
     #fullscreen-current-session h2,
-    #upcoming-sessions-container h2 { font-size: clamp(12px, 2.2vh, 20px); margin-bottom: 0.5vh; }
+    #upcoming-sessions-container h2 { font-size: clamp(12px, 2.2vh, 20px); margin-bottom: 0.3vh; }
     #fullscreen-current-session .time { font-size: 4vh; }
-    #fullscreen-current-session { --current-name-size: 1.8vh; }
-    .upcoming-session-item { margin-bottom: 0.5vh; padding: 0.5vh; }
-    #upcoming-sessions-list { --upcoming-font-size: 1.7vh; }
+    #fullscreen-current-session { --current-name-size: 2.2vh; }
+    .upcoming-session-item { margin-bottom: 0.3vh; padding: 0.3vh; }
+    #upcoming-sessions-list { --upcoming-font-size: 2vh; }
 }
 
         /* Table Styles - No Toggle */
