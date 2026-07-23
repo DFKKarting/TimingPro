@@ -755,7 +755,10 @@ margin-top: -0px;
                 .from("schedule")
                 .update({ sessions, updated_at: new Date().toISOString() })
                 .eq("id", 1);
-            if (error) console.error("Kon schema niet opslaan naar Supabase:", error.message);
+            if (error) {
+                console.error("Kon schema niet opslaan naar Supabase:", error.message);
+                alert("Opslaan naar de database is mislukt:\n" + error.message + "\n\nJe wijziging is dus NIET gedeeld met andere apparaten - alleen lokaal zichtbaar tot je herlaadt.");
+            }
         }
 
         function subscribeToScheduleChanges() {
