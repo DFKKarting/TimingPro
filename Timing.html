@@ -212,6 +212,7 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), 0 0 30px rgba(245, 66, 66, 0.2);
     background: linear-gradient(160deg, #3a3a3a, #262626);
     min-height: 0; /* Reset min-height */
+    overflow: hidden; /* JS shrinks the name to fit; this is just a safety net */
     display: flex;
     flex-direction: column;
     justify-content: center; /* Center content */
@@ -243,7 +244,7 @@
 #fullscreen-next-session p {
     color: white;
     font-weight: 600;
-    font-size: 8vh;
+    font-size: var(--next-name-size, 8vh);
     margin: 0;
     max-width: 100%;
     overflow-wrap: break-word;
@@ -404,7 +405,7 @@ margin-top: -0px;
     #fullscreen-next-session { padding: 1.5vh; }
     #fullscreen-next-session h2 { font-size: clamp(14px, 3vh, 26px); margin-bottom: 0.5vh; }
     #fullscreen-next-session .time { font-size: 6vh; }
-    #fullscreen-next-session p { font-size: 3.5vh; }
+    #fullscreen-next-session { --next-name-size: 3.5vh; }
 
     #bottom-timers-container { margin-bottom: 1vh; }
     #fullscreen-current-session,
@@ -1133,7 +1134,9 @@ margin-top: -0px;
                 const fullscreenNextSession = document.getElementById("fullscreen-next-session");
                 if (nextSession) {
                     updateTimer(fullscreenNextSession, new Date(`${nextSession.date}T${nextSession.startTime}`).getTime());
-                    document.getElementById("next-session-name-fullscreen").textContent = formatSessionName(nextSession.name);
+                    const nextNameEl = document.getElementById("next-session-name-fullscreen");
+                    nextNameEl.textContent = formatSessionName(nextSession.name);
+                    shrinkToFit(fullscreenNextSession, nextNameEl, "--next-name-size");
                 } else {
                     document.getElementById("next-session-name-fullscreen").textContent = "No upcoming session";
                     if (fullscreenNextSession) fullscreenNextSession.querySelector('.time').textContent = '';
