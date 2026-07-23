@@ -59,25 +59,29 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
 
-        #fullscreen-btn {
-            background: linear-gradient(135deg, #f54242, #b52323);
+        .control-buttons {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+            z-index: 1002;
+        }
+        .control-buttons button {
+            background: rgba(245, 66, 66, 0.15);
             color: white;
-            border: none;
-            padding: 8px 16px;
+            border: 1px solid rgba(245, 66, 66, 0.6);
+            padding: 6px 12px;
             font-family: 'Rajdhani', sans-serif;
             font-weight: 600;
             letter-spacing: 0.5px;
-            font-size: 0.9em;
+            font-size: 0.85em;
             cursor: pointer;
             border-radius: 6px;
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.5);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            z-index: 10;
+            backdrop-filter: blur(4px);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
-        #fullscreen-btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 5px 14px rgba(245, 66, 66, 0.5); }
+        .control-buttons button:hover { transform: translateY(-2px) scale(1.03); background: rgba(245, 66, 66, 0.9); box-shadow: 0 5px 14px rgba(245, 66, 66, 0.5); }
 
         /* Normal Timer Styles */
         .timer {
@@ -117,7 +121,7 @@
 
        /* Fullscreen Styles */
 #fullscreen-container {
-    display: none;
+    display: flex;
     position: fixed;
     top: 0;
     left: 0;
@@ -136,9 +140,6 @@
     overflow: hidden; /* Prevent scrollbars */
 }
 
-#fullscreen-container.active {
-    display: flex;
-}
 
 /* Top Section - Current Time (with Images) */
 #current-time-section {
@@ -513,6 +514,17 @@ margin-top: -0px;
         #scheduleStatusModal { text-align: center; max-width: 420px; }
         #scheduleStatusModal button { background: linear-gradient(135deg, #f54242, #b52323); color: white; border: none; padding: 8px 18px; font-family: 'Rajdhani', sans-serif; font-weight: 600; cursor: pointer; border-radius: 6px; margin-top: 5px; }
 
+        #loginModal { max-width: 380px; text-align: center; }
+        #loginModal input { margin: 10px 0; padding: 10px; width: 100%; font-size: 1em; font-family: 'Rajdhani', sans-serif; border: 1px solid #555; border-radius: 6px; background-color: #1e1e1e; color: white; }
+        #loginError { color: #f54242; font-size: 0.9em; margin: 5px 0 0 0; display: none; }
+        #adminPanelModal { max-width: 1000px; }
+        #adminPanelModal .admin-panel-scroll { overflow-y: auto; flex: 1; }
+        #adminPanelModal #schedule-container table { width: 100%; }
+        #adminPanelModal .date-header, #adminPanelModal table { width: 100%; }
+        #adminPanelModal .buttons-container { margin-top: 15px; }
+
+        .top-banner, h1, .checkered-divider, #countdown, #current-session { display: none; }
+
     </style>
 </head>
 <body>
@@ -522,7 +534,10 @@ margin-top: -0px;
     <h1>Time Schedule IAME Benelux Collective Test</h1>
     <div class="checkered-divider"></div>
 
-    <button id="fullscreen-btn" onclick="toggleFullscreen()">Fullscreen</button>
+    <div class="control-buttons">
+        <button onclick="toggleFullscreen()">Fullscreen</button>
+        <button id="admin-toggle-btn" onclick="openAdminArea()">Admin</button>
+    </div>
 
     <!-- Normal Timers -->
     <div id="countdown" class="timer">
@@ -581,18 +596,45 @@ margin-top: -0px;
         </div>
     </div>
 
-     <!-- ... (rest of the HTML remains the same) ... -->
-    <div id="schedule-container"></div>
+    <div class="overlay" id="adminOverlay" onclick="closeAdminOverlays()"></div>
 
-    <div class="buttons-container">
-        <button onclick="toggleEditMode()">Edit</button>
-        <button onclick="openAddSessionForm()">Add Session</button>
-        <button onclick="downloadCSV()">Download CSV</button>
-        <input type="file" id="uploadCSV" accept=".csv" onchange="uploadCSV(event)" style="display: none;">
-        <button onclick="document.getElementById('uploadCSV').click()">Upload CSV</button>
-        <input type="file" id="uploadSchedule" accept="application/pdf" onchange="handleScheduleUpload(event)" style="display: none;">
-        <button onclick="document.getElementById('uploadSchedule').click()">Upload PDF</button>
-        <button onclick="clearSchedule()">Clear Schedule</button>
+    <div class="review-modal" id="loginModal">
+        <h2>Admin Login</h2>
+        <input type="email" id="loginEmail" placeholder="E-mail" autocomplete="username">
+        <input type="password" id="loginPassword" placeholder="Wachtwoord" autocomplete="current-password">
+        <p id="loginError"></p>
+        <div class="review-footer">
+            <span></span>
+            <div>
+                <button onclick="doLogin()">Inloggen</button>
+                <button onclick="closeAdminOverlays()">Annuleren</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="review-modal" id="adminPanelModal">
+        <h2>Schema beheren</h2>
+        <div class="admin-panel-scroll">
+            <div id="schedule-container"></div>
+
+            <div class="buttons-container">
+                <button onclick="toggleEditMode()">Edit</button>
+                <button onclick="openAddSessionForm()">Add Session</button>
+                <button onclick="downloadCSV()">Download CSV</button>
+                <input type="file" id="uploadCSV" accept=".csv" onchange="uploadCSV(event)" style="display: none;">
+                <button onclick="document.getElementById('uploadCSV').click()">Upload CSV</button>
+                <input type="file" id="uploadSchedule" accept="application/pdf" onchange="handleScheduleUpload(event)" style="display: none;">
+                <button onclick="document.getElementById('uploadSchedule').click()">Upload PDF</button>
+                <button onclick="clearSchedule()">Clear Schedule</button>
+            </div>
+        </div>
+        <div class="review-footer">
+            <span></span>
+            <div>
+                <button onclick="doLogout()">Uitloggen</button>
+                <button onclick="closeAdminOverlays()">Sluiten</button>
+            </div>
+        </div>
     </div>
 
     <div class="overlay" id="overlay" onclick="closeSessionForm()"></div>
@@ -688,6 +730,57 @@ margin-top: -0px;
                     updateSchedule();
                 })
                 .subscribe();
+        }
+
+        // --- Admin login -------------------------------------------------
+        let isAdminLoggedIn = false;
+
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            isAdminLoggedIn = !!session;
+        });
+
+        function openAdminArea() {
+            document.getElementById("adminOverlay").style.display = "block";
+            if (isAdminLoggedIn) {
+                document.getElementById("adminPanelModal").classList.add("active");
+                updateSchedule();
+            } else {
+                document.getElementById("loginEmail").value = "";
+                document.getElementById("loginPassword").value = "";
+                document.getElementById("loginError").style.display = "none";
+                document.getElementById("loginModal").classList.add("active");
+            }
+        }
+
+        function closeAdminOverlays() {
+            document.getElementById("adminOverlay").style.display = "none";
+            document.getElementById("loginModal").classList.remove("active");
+            document.getElementById("adminPanelModal").classList.remove("active");
+        }
+
+        async function doLogin() {
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value;
+            const errorEl = document.getElementById("loginError");
+            errorEl.style.display = "none";
+            if (!email || !password) return;
+
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) {
+                errorEl.textContent = "Inloggen mislukt: " + error.message;
+                errorEl.style.display = "block";
+                return;
+            }
+            isAdminLoggedIn = true;
+            document.getElementById("loginModal").classList.remove("active");
+            document.getElementById("adminPanelModal").classList.add("active");
+            updateSchedule();
+        }
+
+        async function doLogout() {
+            await supabaseClient.auth.signOut();
+            isAdminLoggedIn = false;
+            closeAdminOverlays();
         }
 
         function toggleEditMode() {
@@ -790,15 +883,14 @@ margin-top: -0px;
             return `${day}-${month}-${year}`;
         }
 
+        // The countdown board is always shown in its "fullscreen" layout now
+        // (no toggle needed for that) - this button only asks the browser to
+        // hide its own chrome (address bar etc.) for a true kiosk look.
         function toggleFullscreen() {
-            const container = document.getElementById("fullscreen-container");
-            container.classList.toggle("active");
-
-            if (container.classList.contains("active")) {
+            const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+            if (!isFullscreen) {
                 if (document.documentElement.requestFullscreen) {
                     document.documentElement.requestFullscreen();
-                } else if (document.documentElement.mozRequestFullScreen) {
-                    document.documentElement.mozRequestFullScreen();
                 } else if (document.documentElement.webkitRequestFullscreen) {
                     document.documentElement.webkitRequestFullscreen();
                 } else if (document.documentElement.msRequestFullscreen) {
@@ -807,15 +899,12 @@ margin-top: -0px;
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
                 } else if (document.webkitExitFullscreen) {
                     document.webkitExitFullscreen();
                 } else if (document.msExitFullscreen) {
                     document.msExitFullscreen();
                 }
             }
-            updateSchedule();
         }
 
         function updateTimer(element, targetTime, excludeSeconds = false) {
@@ -968,8 +1057,8 @@ margin-top: -0px;
                 updateTimer(currentSessionElement, null);
             }
 
-            const isFullscreenActive = document.getElementById("fullscreen-container").classList.contains("active");
-            if (isFullscreenActive) {
+            {
+                // The countdown board is always shown, so this always runs now.
                 updateCurrentTimeFullscreen();
 
                 // Next Session Timer (Fullscreen)
