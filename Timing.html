@@ -61,23 +61,23 @@
 
         .control-buttons {
             position: fixed;
-            top: 15px;
-            right: 15px;
+            top: 6px;
+            right: 6px;
             display: flex;
-            gap: 8px;
+            gap: 6px;
             z-index: 1002;
         }
         .control-buttons button {
-            background: rgba(245, 66, 66, 0.15);
+            background: rgba(20, 20, 20, 0.55);
             color: white;
             border: 1px solid rgba(245, 66, 66, 0.6);
-            padding: 6px 12px;
+            padding: 3px 8px;
             font-family: 'Rajdhani', sans-serif;
             font-weight: 600;
             letter-spacing: 0.5px;
-            font-size: 0.85em;
+            font-size: 0.7em;
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: 5px;
             backdrop-filter: blur(4px);
             transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
@@ -137,6 +137,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 2vh;
+    padding-top: max(2vh, 34px); /* Clear space for the fixed control buttons */
     overflow: hidden; /* Prevent scrollbars */
 }
 
