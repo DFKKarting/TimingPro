@@ -2,27 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#0d0d0d">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Time Schedule IAME Benelux Collective Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Schedule IAME Benelux Round 4</title>
     <link rel="icon" type="image/png" href="DFK ZWT.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
     <style>
         /* CSS - Current Time with Images - Integrated and Corrected */
         * { box-sizing: border-box; }
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            background: #0d0d0d; /* Fallback so any sliver near the edges is dark, never white */
-            overflow: hidden; /* The countdown board fills the screen exactly - no page scroll */
-        }
         body {
             font-family: 'Rajdhani', Arial, sans-serif;
             text-align: center;
             color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
             background:
                 repeating-linear-gradient(135deg, rgba(255,255,255,0.03) 0 20px, transparent 20px 40px),
                 radial-gradient(circle at 50% -10%, #3a3a3a 0%, #1a1a1a 45%, #0d0d0d 100%);
@@ -65,29 +59,25 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
 
-        .control-buttons {
-            position: fixed;
-            top: 6px;
-            right: 6px;
-            display: flex;
-            gap: 6px;
-            z-index: 1002;
-        }
-        .control-buttons button {
-            background: rgba(20, 20, 20, 0.55);
+        #fullscreen-btn {
+            background: linear-gradient(135deg, #f54242, #b52323);
             color: white;
-            border: 1px solid rgba(245, 66, 66, 0.6);
-            padding: 3px 8px;
+            border: none;
+            padding: 8px 16px;
             font-family: 'Rajdhani', sans-serif;
             font-weight: 600;
             letter-spacing: 0.5px;
-            font-size: 0.7em;
+            font-size: 0.9em;
             cursor: pointer;
-            border-radius: 5px;
-            backdrop-filter: blur(4px);
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            border-radius: 6px;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            z-index: 10;
         }
-        .control-buttons button:hover { transform: translateY(-2px) scale(1.03); background: rgba(245, 66, 66, 0.9); box-shadow: 0 5px 14px rgba(245, 66, 66, 0.5); }
+        #fullscreen-btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 5px 14px rgba(245, 66, 66, 0.5); }
 
         /* Normal Timer Styles */
         .timer {
@@ -127,12 +117,12 @@
 
        /* Fullscreen Styles */
 #fullscreen-container {
-    display: flex;
+    display: none;
     position: fixed;
-    inset: 0; /* Stretch fully to all edges, including under notch/home-bar safe areas */
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    height: 100dvh; /* Accounts for mobile browser chrome so nothing gets cut off/needs scrolling */
     background:
         repeating-linear-gradient(135deg, rgba(255,255,255,0.025) 0 20px, transparent 20px 40px),
         radial-gradient(circle at 50% -10%, #2b2b2b 0%, #0d0d0d 55%, #000 100%);
@@ -143,10 +133,12 @@
     justify-content: space-between;
     align-items: center;
     padding: 2vh;
-    padding-top: max(2vh, 34px); /* Clear space for the fixed control buttons */
     overflow: hidden; /* Prevent scrollbars */
 }
 
+#fullscreen-container.active {
+    display: flex;
+}
 
 /* Top Section - Current Time (with Images) */
 #current-time-section {
@@ -200,7 +192,6 @@
     justify-content: center;
     align-items: center;
     flex-grow: 1; /* Allow to grow */
-    min-height: 0; /* Allow this section to shrink too, not just grow */
 }
 
 #fullscreen-next-session {
@@ -245,9 +236,6 @@
     font-weight: 600;
     font-size: 8vh;
     margin: 0;
-    max-width: 100%;
-    overflow-wrap: break-word;
-    word-break: break-word;
 }
 
 /* Bottom Section - Current and Upcoming */
@@ -272,16 +260,14 @@ margin-bottom: 3%;
 #fullscreen-current-session {
     border: 2px solid #42f54e;
     border-radius: 14px;
-    padding: 1.2vh; /* Restore padding */
+    padding: 2vh; /* Restore padding */
     width: 49%;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6), 0 0 20px rgba(66, 245, 78, 0.15);
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 1vh;
-    height: 28vh;
-    overflow: hidden; /* JS shrinks the name to fit; this is just a safety net */
+    justify-content: space-between; /* Distribute space */
+    height: 25vh; /* Keep height */
     background: linear-gradient(160deg, #1a1a1a, #050505);
 margin-top: -0px;
 }
@@ -292,7 +278,7 @@ margin-top: -0px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
     font-size: 28px;
-    margin: 0 0 0.4vh 0;
+    margin: 0 0 1vh 0;
 }
 
 #fullscreen-current-session .time {
@@ -307,27 +293,22 @@ margin-top: -0px;
 #fullscreen-current-session p {
     color: white;
     font-weight: 600;
-    font-size: var(--current-name-size, 3vh);
+    font-size: 3vh;
     margin: 0;
-    max-width: 100%;
-    overflow-wrap: break-word;
-    word-break: break-word;
 }
 
 /* Upcoming Sessions Timer */
 #upcoming-sessions-container {
     border: 2px solid #f54242;
     border-radius: 14px;
-    padding: 1.2vh; /* Restore padding */
+    padding: 2vh; /* Restore padding */
     width: 49%;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 66, 66, 0.15);
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 0.6vh;
-    height: 28vh; /* Keep height */
-    overflow: hidden; /* Never spill outside the box, even with long names */
+    justify-content: space-between; /* Distribute space */
+    height: 25vh; /* Keep height */
     background: linear-gradient(160deg, #363636, #262626);
 }
 
@@ -337,25 +318,19 @@ margin-top: -0px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
     font-size: 28px;
-    margin: 0 0 0.4vh 0;
+    margin: 0 0 1vh 0;
 }
 
 #upcoming-sessions-list {
     width: 100%;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Center the items within the available space */
-    overflow: hidden; /* JS shrinks the list to fit; this is just a safety net */
-    min-height: 0;
 }
 
 .upcoming-session-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.4vh;
-    padding: 0.4vh;
+    margin-bottom: 1vh;
+    padding: 1vh;
     border-bottom: 1px solid #555;
     transition: background-color 0.2s ease;
 }
@@ -373,51 +348,37 @@ margin-top: -0px;
 .upcoming-session-item .session-name {
     color: white;
     font-weight: 600;
-    font-size: var(--upcoming-font-size, 2.5vh);
+    font-size: 2.5vh;
     flex-grow: 1;
     text-align: left;
-    overflow-wrap: break-word;
-    word-break: break-word;
-    min-width: 0;
 }
 
 .upcoming-session-item .time {
     color: #f54242;
     font-weight: 700;
-    font-size: var(--upcoming-font-size, 2.5vh);
+    font-size: 2.5vh;
     margin-left: 1em;
     white-space: nowrap;
 }
 
-/* Responsive adjustments - phones are tall and narrow, so vertical space
-   (not horizontal) is the scarce resource. Keep boxes side-by-side (stacking
-   them would double the height needed) and shrink everything to fit one
-   screen with no scrolling. */
-@media (max-width: 768px), (max-height: 500px) {
-    #current-time-section { margin-bottom: 0.5vh; }
-    .fullscreen-timer-current-time { padding: 1vh 1.5vh; }
-    .fullscreen-timer-current-time h2 { font-size: 2vh; }
-    .fullscreen-timer-current-time .time { font-size: 4vh; }
-    .fullscreen-timer-current-time img { height: 4.5vh; max-width: 16vw; margin: 0 0.6vh; flex-shrink: 1; object-fit: contain; }
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #bottom-timers-container,
+    #fullscreen-container {
+        flex-direction: column;
+        align-items: center;
+    }
 
-    #fullscreen-next-session { padding: 1.5vh; }
-    #fullscreen-next-session h2 { font-size: clamp(14px, 3vh, 26px); margin-bottom: 0.5vh; }
-    #fullscreen-next-session .time { font-size: 6vh; }
-    #fullscreen-next-session p { font-size: 3.5vh; }
-
-    #bottom-timers-container { gap: 3%; margin-bottom: 1vh; }
+    #fullscreen-current-session,
+    #upcoming-sessions-container,
+    #fullscreen-next-session {
+        width: 95%;
+    }
+    /* Ensure equal height on smaller screens */
     #fullscreen-current-session,
     #upcoming-sessions-container {
-        width: 49%;
-        height: 23vh;
-        padding: 0.7vh;
+        height: auto;
     }
-    #fullscreen-current-session h2,
-    #upcoming-sessions-container h2 { font-size: clamp(12px, 2.2vh, 20px); margin-bottom: 0.3vh; }
-    #fullscreen-current-session .time { font-size: 4vh; }
-    #fullscreen-current-session { --current-name-size: 2.2vh; }
-    .upcoming-session-item { margin-bottom: 0.3vh; padding: 0.3vh; }
-    #upcoming-sessions-list { --upcoming-font-size: 2vh; }
 }
 
         /* Table Styles - No Toggle */
@@ -552,30 +513,16 @@ margin-top: -0px;
         #scheduleStatusModal { text-align: center; max-width: 420px; }
         #scheduleStatusModal button { background: linear-gradient(135deg, #f54242, #b52323); color: white; border: none; padding: 8px 18px; font-family: 'Rajdhani', sans-serif; font-weight: 600; cursor: pointer; border-radius: 6px; margin-top: 5px; }
 
-        #loginModal { max-width: 380px; text-align: center; }
-        #loginModal input { margin: 10px 0; padding: 10px; width: 100%; font-size: 1em; font-family: 'Rajdhani', sans-serif; border: 1px solid #555; border-radius: 6px; background-color: #1e1e1e; color: white; }
-        #loginError { color: #f54242; font-size: 0.9em; margin: 5px 0 0 0; display: none; }
-        #adminPanelModal { max-width: 1000px; }
-        #adminPanelModal .admin-panel-scroll { overflow-y: auto; flex: 1; }
-        #adminPanelModal #schedule-container table { width: 100%; }
-        #adminPanelModal .date-header, #adminPanelModal table { width: 100%; }
-        #adminPanelModal .buttons-container { margin-top: 15px; }
-
-        .top-banner, h1, .checkered-divider, #countdown, #current-session { display: none; }
-
     </style>
 </head>
 <body>
     <div class="top-banner">
         <img src="DFK ZWT.png" alt="DFK Kart Racing Team">
     </div>
-    <h1>Time Schedule IAME Benelux Collective Test</h1>
+    <h1>Time Schedule IAME Benelux Round 4</h1>
     <div class="checkered-divider"></div>
 
-    <div class="control-buttons">
-        <button onclick="toggleFullscreen()">Fullscreen</button>
-        <button id="admin-toggle-btn" onclick="openAdminArea()">Admin</button>
-    </div>
+    <button id="fullscreen-btn" onclick="toggleFullscreen()">Fullscreen</button>
 
     <!-- Normal Timers -->
     <div id="countdown" class="timer">
@@ -634,45 +581,18 @@ margin-top: -0px;
         </div>
     </div>
 
-    <div class="overlay" id="adminOverlay" onclick="closeAdminOverlays()"></div>
+     <!-- ... (rest of the HTML remains the same) ... -->
+    <div id="schedule-container"></div>
 
-    <div class="review-modal" id="loginModal">
-        <h2>Admin Login</h2>
-        <input type="email" id="loginEmail" placeholder="E-mail" autocomplete="username">
-        <input type="password" id="loginPassword" placeholder="Wachtwoord" autocomplete="current-password">
-        <p id="loginError"></p>
-        <div class="review-footer">
-            <span></span>
-            <div>
-                <button onclick="doLogin()">Inloggen</button>
-                <button onclick="closeAdminOverlays()">Annuleren</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="review-modal" id="adminPanelModal">
-        <h2>Schema beheren</h2>
-        <div class="admin-panel-scroll">
-            <div id="schedule-container"></div>
-
-            <div class="buttons-container">
-                <button onclick="toggleEditMode()">Edit</button>
-                <button onclick="openAddSessionForm()">Add Session</button>
-                <button onclick="downloadCSV()">Download CSV</button>
-                <input type="file" id="uploadCSV" accept=".csv" onchange="uploadCSV(event)" style="display: none;">
-                <button onclick="document.getElementById('uploadCSV').click()">Upload CSV</button>
-                <input type="file" id="uploadSchedule" accept="application/pdf" onchange="handleScheduleUpload(event)" style="display: none;">
-                <button onclick="document.getElementById('uploadSchedule').click()">Upload PDF</button>
-                <button onclick="clearSchedule()">Clear Schedule</button>
-            </div>
-        </div>
-        <div class="review-footer">
-            <span></span>
-            <div>
-                <button onclick="doLogout()">Uitloggen</button>
-                <button onclick="closeAdminOverlays()">Sluiten</button>
-            </div>
-        </div>
+    <div class="buttons-container">
+        <button onclick="toggleEditMode()">Edit</button>
+        <button onclick="openAddSessionForm()">Add Session</button>
+        <button onclick="downloadCSV()">Download CSV</button>
+        <input type="file" id="uploadCSV" accept=".csv" onchange="uploadCSV(event)" style="display: none;">
+        <button onclick="document.getElementById('uploadCSV').click()">Upload CSV</button>
+        <input type="file" id="uploadSchedule" accept="application/pdf" onchange="handleScheduleUpload(event)" style="display: none;">
+        <button onclick="document.getElementById('uploadSchedule').click()">Upload PDF</button>
+        <button onclick="clearSchedule()">Clear Schedule</button>
     </div>
 
     <div class="overlay" id="overlay" onclick="closeSessionForm()"></div>
@@ -728,103 +648,14 @@ margin-top: -0px;
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // JavaScript - No Table Toggle
-        // Shared schedule storage - a single row (id=1) in Supabase holds the
-        // whole sessions list, so every device reads/writes the same data
-        // instead of each browser's own localStorage.
-        const SUPABASE_URL = "https://crcoknyrshtfeyzdiciu.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyY29rbnlyc2h0ZmV5emRpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3OTEzMzksImV4cCI6MjEwMDM2NzMzOX0.7mpB0WQGfdmwWbHrzXKiFGpsdslgIlDPUU3QrfDOOM4";
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        let sessions = [];
+        let sessions = JSON.parse(localStorage.getItem("sessions")) || [];
         let editMode = false;
         let editingSessionIndex = null;
 
-        async function loadSessions() {
-            const { data, error } = await supabaseClient.from("schedule").select("sessions").eq("id", 1).single();
-            if (error) {
-                console.error("Kon schema niet laden uit Supabase:", error.message);
-                return;
-            }
-            sessions = data.sessions || [];
-            updateSchedule();
-        }
-
-        async function saveSessions() {
-            const { error } = await supabaseClient
-                .from("schedule")
-                .update({ sessions, updated_at: new Date().toISOString() })
-                .eq("id", 1);
-            if (error) {
-                console.error("Kon schema niet opslaan naar Supabase:", error.message);
-                alert("Opslaan naar de database is mislukt:\n" + error.message + "\n\nJe wijziging is dus NIET gedeeld met andere apparaten - alleen lokaal zichtbaar tot je herlaadt.");
-            }
-        }
-
-        function subscribeToScheduleChanges() {
-            supabaseClient
-                .channel("schedule-changes")
-                // Re-fetch on any change notification instead of trusting the
-                // realtime payload's row data directly - reliable regardless
-                // of replica identity settings, and keeps every open tab/device
-                // in sync without needing a manual refresh.
-                .on("postgres_changes", { event: "UPDATE", schema: "public", table: "schedule", filter: "id=eq.1" }, () => {
-                    loadSessions();
-                })
-                .subscribe();
-        }
-
-        // --- Admin login -------------------------------------------------
-        let isAdminLoggedIn = false;
-
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            isAdminLoggedIn = !!session;
-        });
-
-        function openAdminArea() {
-            document.getElementById("adminOverlay").style.display = "block";
-            if (isAdminLoggedIn) {
-                document.getElementById("adminPanelModal").classList.add("active");
-                updateSchedule();
-            } else {
-                document.getElementById("loginEmail").value = "";
-                document.getElementById("loginPassword").value = "";
-                document.getElementById("loginError").style.display = "none";
-                document.getElementById("loginModal").classList.add("active");
-            }
-        }
-
-        function closeAdminOverlays() {
-            document.getElementById("adminOverlay").style.display = "none";
-            document.getElementById("loginModal").classList.remove("active");
-            document.getElementById("adminPanelModal").classList.remove("active");
-        }
-
-        async function doLogin() {
-            const email = document.getElementById("loginEmail").value.trim();
-            const password = document.getElementById("loginPassword").value;
-            const errorEl = document.getElementById("loginError");
-            errorEl.style.display = "none";
-            if (!email || !password) return;
-
-            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) {
-                errorEl.textContent = "Inloggen mislukt: " + error.message;
-                errorEl.style.display = "block";
-                return;
-            }
-            isAdminLoggedIn = true;
-            document.getElementById("loginModal").classList.remove("active");
-            document.getElementById("adminPanelModal").classList.add("active");
-            updateSchedule();
-        }
-
-        async function doLogout() {
-            await supabaseClient.auth.signOut();
-            isAdminLoggedIn = false;
-            closeAdminOverlays();
+        function saveSessions() {
+            localStorage.setItem("sessions", JSON.stringify(sessions));
         }
 
         function toggleEditMode() {
@@ -927,21 +758,15 @@ margin-top: -0px;
             return `${day}-${month}-${year}`;
         }
 
-        // Ties a trailing number to the word right before it (e.g. "Group 1",
-        // "Test 4") with a non-breaking space, so it can never wrap onto its
-        // own line and end up looking like an unrelated stray number.
-        function formatSessionName(name) {
-            return (name || "").replace(/ (\d+)\b/g, " $1");
-        }
-
-        // The countdown board is always shown in its "fullscreen" layout now
-        // (no toggle needed for that) - this button only asks the browser to
-        // hide its own chrome (address bar etc.) for a true kiosk look.
         function toggleFullscreen() {
-            const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
-            if (!isFullscreen) {
+            const container = document.getElementById("fullscreen-container");
+            container.classList.toggle("active");
+
+            if (container.classList.contains("active")) {
                 if (document.documentElement.requestFullscreen) {
                     document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    document.documentElement.mozRequestFullScreen();
                 } else if (document.documentElement.webkitRequestFullscreen) {
                     document.documentElement.webkitRequestFullscreen();
                 } else if (document.documentElement.msRequestFullscreen) {
@@ -950,28 +775,15 @@ margin-top: -0px;
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
                 } else if (document.webkitExitFullscreen) {
                     document.webkitExitFullscreen();
                 } else if (document.msExitFullscreen) {
                     document.msExitFullscreen();
                 }
             }
-        }
-
-        // Shrinks the font-size custom property on `container` until its
-        // content fits without scrolling/clipping, starting from whatever
-        // size `sampleEl` currently renders at (so it respects the normal
-        // desktop/mobile CSS default instead of hardcoding one).
-        function shrinkToFit(container, sampleEl, cssVarName, minPx = 8) {
-            if (!container || !sampleEl) return;
-            container.style.removeProperty(cssVarName);
-            let px = parseFloat(getComputedStyle(sampleEl).fontSize);
-            let guard = 0;
-            while (container.scrollHeight > container.clientHeight + 1 && px > minPx && guard < 60) {
-                px -= 0.5;
-                container.style.setProperty(cssVarName, px + "px");
-                guard++;
-            }
+            updateSchedule();
         }
 
         function updateTimer(element, targetTime, excludeSeconds = false) {
@@ -1069,7 +881,7 @@ margin-top: -0px;
                 table.innerHTML = `<thead><tr><th>Start Time</th><th>End Time</th><th>Session</th><th>Duration</th>${actionsHeader}</tr></thead>
                                    <tbody>${groupedSessions[date].map(s => {
                                        const actionButtons = editMode ? `<td class="action-buttons"><button onclick="editSession(${s.index})">Edit</button><button onclick="removeSession(${s.index})">Delete</button></td>` : '';
-                                       return `<tr><td>${s.startTime}</td><td>${s.endTime}</td><td>${formatSessionName(s.name)}</td><td>${s.duration}</td>${actionButtons}</tr>`;
+                                       return `<tr><td>${s.startTime}</td><td>${s.endTime}</td><td>${s.name}</td><td>${s.duration}</td>${actionButtons}</tr>`;
                                    }).join('')}</tbody>`;
                 dayContainer.appendChild(table);
 
@@ -1124,15 +936,15 @@ margin-top: -0px;
                 updateTimer(currentSessionElement, null);
             }
 
-            {
-                // The countdown board is always shown, so this always runs now.
+            const isFullscreenActive = document.getElementById("fullscreen-container").classList.contains("active");
+            if (isFullscreenActive) {
                 updateCurrentTimeFullscreen();
 
                 // Next Session Timer (Fullscreen)
                 const fullscreenNextSession = document.getElementById("fullscreen-next-session");
                 if (nextSession) {
                     updateTimer(fullscreenNextSession, new Date(`${nextSession.date}T${nextSession.startTime}`).getTime());
-                    document.getElementById("next-session-name-fullscreen").textContent = formatSessionName(nextSession.name);
+                    document.getElementById("next-session-name-fullscreen").textContent = nextSession.name;
                 } else {
                     document.getElementById("next-session-name-fullscreen").textContent = "No upcoming session";
                     if (fullscreenNextSession) fullscreenNextSession.querySelector('.time').textContent = '';
@@ -1143,9 +955,7 @@ margin-top: -0px;
                 if (currentSession) {
                     fullscreenCurrentSession.classList.remove("hidden"); // Ensure it's visible
                     updateTimer(fullscreenCurrentSession, new Date(`${currentSession.date}T${currentSession.endTime}`).getTime());
-                    const currentNameEl = document.getElementById("current-session-name-fullscreen");
-                    currentNameEl.textContent = formatSessionName(currentSession.name);
-                    shrinkToFit(fullscreenCurrentSession, currentNameEl, "--current-name-size");
+                    document.getElementById("current-session-name-fullscreen").textContent = currentSession.name;
                 } else {
                     fullscreenCurrentSession.classList.add("hidden"); // Hide if no current session
                     document.getElementById("current-session-name-fullscreen").textContent = "No active session";
@@ -1166,16 +976,13 @@ margin-top: -0px;
                     const sessionItem = document.createElement("div");
                     sessionItem.classList.add("upcoming-session-item");
                     sessionItem.innerHTML = `
-                        <div class="session-name">${formatSessionName(session.name)}</div>
+                        <div class="session-name">${session.name}</div>
                         <div class="time"></div>
                     `;
                     // Exclude seconds for upcoming sessions
                     updateTimer(sessionItem, new Date(`${session.date}T${session.startTime}`).getTime(), true);
                     upcomingSessionsList.appendChild(sessionItem);
                 });
-
-                const firstUpcomingName = upcomingSessionsList.querySelector(".session-name");
-                if (firstUpcomingName) shrinkToFit(upcomingSessionsList, firstUpcomingName, "--upcoming-font-size");
             }
 
             clearTimeout(updateSchedule.timeout);
@@ -1208,9 +1015,6 @@ margin-top: -0px;
 
         const SCHEDULE_TIME_RANGE_FRAGMENT_RE = /\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}/;
         const SCHEDULE_DURATION_RE = /(\d+)\s*(?:min|minutes|')\s*(\+\s*1\s*lap)?/i;
-        // Strips the duration/lap suffix from a name fragment for display,
-        // e.g. "Qualifying Heat / 10 min + 1 Lap" -> "Qualifying Heat".
-        const SCHEDULE_DURATION_STRIP_RE = /\s*[\/\-]?\s*\d+\s*(?:'|min\b|minutes\b)\s*(?:\+\s*\d*\s*laps?\b)?\s*\*?/gi;
         // Session/class text containing any of these (case-insensitive) is
         // treated as logistics, not an on-track session, and left out.
         const SCHEDULE_SKIP_KEYWORDS = ["voucher", "scan tyre", "tyres scanning", "mounting", "admin",
@@ -1327,14 +1131,7 @@ margin-top: -0px;
             }
             if (!kept.length) return [];
 
-            // "name" keeps the duration/lap text (e.g. "/ 10 min + 1 Lap") so
-            // parseScheduleDurationMinutes can still read it below; the actual
-            // name shown on the site strips that part out.
             const name = [...new Set(kept)].join(" | ").replace(/,/g, " ");
-            const displayFragments = kept
-                .map(t => t.replace(SCHEDULE_DURATION_STRIP_RE, "").replace(/\([^)]*\)/g, "").replace(/\s+/g, " ").trim())
-                .filter(Boolean);
-            const displayName = ([...new Set(displayFragments)].join(" | ") || name).replace(/,/g, " ");
             let start, end, guessed = false, pregridClosing = null;
 
             if (times.length >= 2 && scheduleTimeToMinutes(times[1]) > scheduleTimeToMinutes(times[0])) {
@@ -1359,13 +1156,13 @@ margin-top: -0px;
             if (pregridClosing) {
                 return [{
                     date: currentDate || "",
-                    name: `Pre-grid Open | ${displayName}`,
+                    name: `Pre-grid Open | ${name}`,
                     startTime: addMinutesToTime(pregridClosing, -PRE_GRID_OPEN_MINUTES_BEFORE_CLOSE),
                     endTime: pregridClosing,
                     guessed: !currentDate,
                 }];
             }
-            return [{ date: currentDate || "", name: displayName, startTime: start, endTime: end, guessed: guessed || !currentDate }];
+            return [{ date: currentDate || "", name, startTime: start, endTime: end, guessed: guessed || !currentDate }];
         }
 
         function scheduleTimeToMinutes(hhmm) {
@@ -1516,12 +1313,7 @@ margin-top: -0px;
             alert(`${added} sessie(s) toegevoegd aan het schema.`);
         }
 
-        loadSessions();
-        subscribeToScheduleChanges();
-        // Belt-and-suspenders: also just re-fetch periodically. This
-        // guarantees every screen stays in sync within a few seconds even
-        // if the realtime push doesn't arrive for some reason.
-        setInterval(loadSessions, 5000);
+        updateSchedule(); // Initial call
 
     </script>
 </body>
