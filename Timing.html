@@ -277,8 +277,7 @@ margin-bottom: 3%;
     display: flex;
     flex-direction: column;
     justify-content: space-between; /* Distribute space */
-    height: 25vh; /* Keep height */
-    overflow: hidden; /* Never spill outside the box, even with a long name */
+    min-height: 25vh; /* Grow instead of clipping if the name is long */
     background: linear-gradient(160deg, #1a1a1a, #050505);
 margin-top: -0px;
 }
@@ -338,7 +337,8 @@ margin-top: -0px;
 
 #upcoming-sessions-list {
     width: 100%;
-    overflow: hidden;
+    flex: 1;
+    overflow-y: auto; /* Scroll within the box instead of losing/clipping text */
     min-height: 0;
 }
 
@@ -401,9 +401,10 @@ margin-top: -0px;
     #fullscreen-current-session,
     #upcoming-sessions-container {
         width: 49%;
-        height: 20vh;
         padding: 1vh;
     }
+    #fullscreen-current-session { min-height: 20vh; }
+    #upcoming-sessions-container { height: 20vh; }
     #fullscreen-current-session h2,
     #upcoming-sessions-container h2 { font-size: clamp(12px, 2.2vh, 20px); margin-bottom: 0.5vh; }
     #fullscreen-current-session .time { font-size: 4vh; }
