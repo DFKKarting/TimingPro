@@ -276,7 +276,8 @@ margin-bottom: 3%;
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Distribute space */
+    justify-content: center;
+    gap: 1vh;
     height: 28vh;
     overflow: hidden; /* JS shrinks the name to fit; this is just a safety net */
     background: linear-gradient(160deg, #1a1a1a, #050505);
@@ -321,7 +322,8 @@ margin-top: -0px;
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Distribute space */
+    justify-content: center;
+    gap: 0.6vh;
     height: 28vh; /* Keep height */
     overflow: hidden; /* Never spill outside the box, even with long names */
     background: linear-gradient(160deg, #363636, #262626);
@@ -339,6 +341,9 @@ margin-top: -0px;
 #upcoming-sessions-list {
     width: 100%;
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center the items within the available space */
     overflow: hidden; /* JS shrinks the list to fit; this is just a safety net */
     min-height: 0;
 }
