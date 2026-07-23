@@ -277,7 +277,8 @@ margin-bottom: 3%;
     display: flex;
     flex-direction: column;
     justify-content: space-between; /* Distribute space */
-    min-height: 25vh; /* Grow instead of clipping if the name is long */
+    height: 25vh;
+    overflow: hidden; /* JS shrinks the name to fit; this is just a safety net */
     background: linear-gradient(160deg, #1a1a1a, #050505);
 margin-top: -0px;
 }
@@ -303,7 +304,7 @@ margin-top: -0px;
 #fullscreen-current-session p {
     color: white;
     font-weight: 600;
-    font-size: 3vh;
+    font-size: var(--current-name-size, 3vh);
     margin: 0;
     max-width: 100%;
     overflow-wrap: break-word;
@@ -338,7 +339,7 @@ margin-top: -0px;
 #upcoming-sessions-list {
     width: 100%;
     flex: 1;
-    overflow-y: auto; /* Scroll within the box instead of losing/clipping text */
+    overflow: hidden; /* JS shrinks the list to fit; this is just a safety net */
     min-height: 0;
 }
 
@@ -365,7 +366,7 @@ margin-top: -0px;
 .upcoming-session-item .session-name {
     color: white;
     font-weight: 600;
-    font-size: 2.5vh;
+    font-size: var(--upcoming-font-size, 2.5vh);
     flex-grow: 1;
     text-align: left;
     overflow-wrap: break-word;
@@ -376,7 +377,7 @@ margin-top: -0px;
 .upcoming-session-item .time {
     color: #f54242;
     font-weight: 700;
-    font-size: 2.5vh;
+    font-size: var(--upcoming-font-size, 2.5vh);
     margin-left: 1em;
     white-space: nowrap;
 }
@@ -401,17 +402,15 @@ margin-top: -0px;
     #fullscreen-current-session,
     #upcoming-sessions-container {
         width: 49%;
+        height: 20vh;
         padding: 1vh;
     }
-    #fullscreen-current-session { min-height: 20vh; }
-    #upcoming-sessions-container { height: 20vh; }
     #fullscreen-current-session h2,
     #upcoming-sessions-container h2 { font-size: clamp(12px, 2.2vh, 20px); margin-bottom: 0.5vh; }
     #fullscreen-current-session .time { font-size: 4vh; }
-    #fullscreen-current-session p { font-size: 1.8vh; }
+    #fullscreen-current-session { --current-name-size: 1.8vh; }
     .upcoming-session-item { margin-bottom: 0.5vh; padding: 0.5vh; }
-    .upcoming-session-item .session-name,
-    .upcoming-session-item .time { font-size: 1.7vh; }
+    #upcoming-sessions-list { --upcoming-font-size: 1.7vh; }
 }
 
         /* Table Styles - No Toggle */
@@ -939,6 +938,22 @@ margin-top: -0px;
             }
         }
 
+        // Shrinks the font-size custom property on `container` until its
+        // content fits without scrolling/clipping, starting from whatever
+        // size `sampleEl` currently renders at (so it respects the normal
+        // desktop/mobile CSS default instead of hardcoding one).
+        function shrinkToFit(container, sampleEl, cssVarName, minPx = 8) {
+            if (!container || !sampleEl) return;
+            container.style.removeProperty(cssVarName);
+            let px = parseFloat(getComputedStyle(sampleEl).fontSize);
+            let guard = 0;
+            while (container.scrollHeight > container.clientHeight + 1 && px > minPx && guard < 60) {
+                px -= 0.5;
+                container.style.setProperty(cssVarName, px + "px");
+                guard++;
+            }
+        }
+
         function updateTimer(element, targetTime, excludeSeconds = false) {
             if (!element) return;
             const now = new Date().getTime();
@@ -1108,7 +1123,9 @@ margin-top: -0px;
                 if (currentSession) {
                     fullscreenCurrentSession.classList.remove("hidden"); // Ensure it's visible
                     updateTimer(fullscreenCurrentSession, new Date(`${currentSession.date}T${currentSession.endTime}`).getTime());
-                    document.getElementById("current-session-name-fullscreen").textContent = currentSession.name;
+                    const currentNameEl = document.getElementById("current-session-name-fullscreen");
+                    currentNameEl.textContent = currentSession.name;
+                    shrinkToFit(fullscreenCurrentSession, currentNameEl, "--current-name-size");
                 } else {
                     fullscreenCurrentSession.classList.add("hidden"); // Hide if no current session
                     document.getElementById("current-session-name-fullscreen").textContent = "No active session";
@@ -1136,6 +1153,9 @@ margin-top: -0px;
                     updateTimer(sessionItem, new Date(`${session.date}T${session.startTime}`).getTime(), true);
                     upcomingSessionsList.appendChild(sessionItem);
                 });
+
+                const firstUpcomingName = upcomingSessionsList.querySelector(".session-name");
+                if (firstUpcomingName) shrinkToFit(upcomingSessionsList, firstUpcomingName, "--upcoming-font-size");
             }
 
             clearTimeout(updateSchedule.timeout);
