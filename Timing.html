@@ -278,6 +278,7 @@ margin-bottom: 3%;
     flex-direction: column;
     justify-content: space-between; /* Distribute space */
     height: 25vh; /* Keep height */
+    overflow: hidden; /* Never spill outside the box, even with a long name */
     background: linear-gradient(160deg, #1a1a1a, #050505);
 margin-top: -0px;
 }
@@ -322,6 +323,7 @@ margin-top: -0px;
     flex-direction: column;
     justify-content: space-between; /* Distribute space */
     height: 25vh; /* Keep height */
+    overflow: hidden; /* Never spill outside the box, even with long names */
     background: linear-gradient(160deg, #363636, #262626);
 }
 
@@ -336,6 +338,8 @@ margin-top: -0px;
 
 #upcoming-sessions-list {
     width: 100%;
+    overflow: hidden;
+    min-height: 0;
 }
 
 .upcoming-session-item {
