@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Schedule IAME Benelux Collective Test</title>
+    <link rel="icon" type="image/png" href="DFK ZWT.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* CSS - Current Time with Images - Integrated and Corrected */
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Rajdhani', Arial, sans-serif;
+            text-align: center;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background:
+                repeating-linear-gradient(135deg, rgba(255,255,255,0.03) 0 20px, transparent 20px 40px),
+                radial-gradient(circle at 50% -10%, #3a3a3a 0%, #1a1a1a 45%, #0d0d0d 100%);
+            background-attachment: fixed;
+        }
+
+        .top-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .top-banner img { height: 70px; width: auto; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6)); }
+
+        h1 {
+            font-family: 'Orbitron', 'Rajdhani', sans-serif;
+            color: #ff5252;
+            font-size: 2.6em;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(245, 66, 66, 0.6), 0 0 25px rgba(245, 66, 66, 0.35), 2px 2px 5px rgba(0,0,0,0.7);
+            margin: 10px 0 25px 0;
+        }
+
+        .checkered-divider {
+            width: 80%;
+            max-width: 600px;
+            height: 10px;
+            margin: -10px auto 25px auto;
+            background-image:
+                linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000),
+                linear-gradient(45deg, #000 25%, #eee 25%, #eee 75%, #000 75%, #000);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            border-radius: 5px;
+            opacity: 0.85;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        #fullscreen-btn {
+            background: linear-gradient(135deg, #f54242, #b52323);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 0.9em;
+            cursor: pointer;
+            border-radius: 6px;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            z-index: 10;
+        }
+        #fullscreen-btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 5px 14px rgba(245, 66, 66, 0.5); }
+
+        /* Normal Timer Styles */
+        .timer {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 20px auto;
+            padding: 22px;
+            background: linear-gradient(160deg, #363636, #262626);
+            border: 2px solid #f54242;
+            border-radius: 14px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.55), 0 0 18px rgba(245, 66, 66, 0.15);
+            text-align: center;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .timer:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,0.6), 0 0 26px rgba(245, 66, 66, 0.3); }
+        .timer h2 { margin: 0; font-family: 'Orbitron', sans-serif; font-size: 0.75em; letter-spacing: 2px; text-transform: uppercase; padding-bottom: 0.5rem; color: #f54242; }
+        .timer .time { font-size: 1.2em; margin: 0; color: #f54242; text-shadow: 0 0 12px rgba(245, 66, 66, 0.5); animation: pulse-glow 2s ease-in-out infinite; }
+        .timer p { margin: 0; color: white; font-weight: 600;}
+
+        @keyframes pulse-glow {
+            0%, 100% { text-shadow: 0 0 8px rgba(245, 66, 66, 0.4); }
+            50% { text-shadow: 0 0 18px rgba(245, 66, 66, 0.75); }
+        }
+
+        .current-session { border-color: #42f54e; box-shadow: 0 6px 18px rgba(0,0,0,0.55), 0 0 18px rgba(66, 245, 78, 0.15); }
+        .current-session:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.6), 0 0 26px rgba(66, 245, 78, 0.3); }
+        .current-session h2 { color: #42f54e; }
+        .current-session .time { color: #42f54e; text-shadow: 0 0 12px rgba(66, 245, 78, 0.5); animation: pulse-glow-green 2s ease-in-out infinite; }
+        .current-session.hidden { display: none; }
+
+        @keyframes pulse-glow-green {
+            0%, 100% { text-shadow: 0 0 8px rgba(66, 245, 78, 0.4); }
+            50% { text-shadow: 0 0 18px rgba(66, 245, 78, 0.75); }
+        }
+
+       /* Fullscreen Styles */
+#fullscreen-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        repeating-linear-gradient(135deg, rgba(255,255,255,0.025) 0 20px, transparent 20px 40px),
+        radial-gradient(circle at 50% -10%, #2b2b2b 0%, #0d0d0d 55%, #000 100%);
+    z-index: 1000;
+    color: white;
+    font-family: 'Rajdhani', Arial, sans-serif;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2vh;
+    overflow: hidden; /* Prevent scrollbars */
+}
+
+#fullscreen-container.active {
+    display: flex;
+}
+
+/* Top Section - Current Time (with Images) */
+#current-time-section {
+    width: 95%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1vh; /* Add margin */
+}
+
+.fullscreen-timer-current-time {
+    border: 2px solid #f54242;
+    border-radius: 12px;
+    padding: 2vh;
+    width: 100%;
+    max-width: none;
+    background: linear-gradient(160deg, #363636, #262626);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 66, 66, 0.15);
+    display: flex; /* Use flexbox */
+    align-items: center; /* Center vertically */
+    justify-content: space-between; /* Space out items */
+}
+
+.fullscreen-timer-current-time h2 {
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 3vh;
+    margin: 0;
+}
+
+.fullscreen-timer-current-time .time {
+    color: #f54242;
+    font-size: 7vh;
+    font-weight: 700;
+    text-shadow: 0 0 16px rgba(245, 66, 66, 0.5);
+    margin: 0;
+}
+
+.fullscreen-timer-current-time img {
+    height: 8vh; /* Adjust as needed */
+    width: auto;
+    margin: 0 1vh;
+}
+
+/* Middle Section - Next Session */
+#next-session-section {
+    width: 95%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1; /* Allow to grow */
+}
+
+#fullscreen-next-session {
+    border: 3px solid #f54242;
+    border-radius: 18px;
+    padding: 3vh; /* Restore padding */
+    width: 100%;
+    max-width: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), 0 0 30px rgba(245, 66, 66, 0.2);
+    background: linear-gradient(160deg, #3a3a3a, #262626);
+    min-height: 0; /* Reset min-height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content */
+    align-items: center;
+    text-align: center;
+}
+
+#fullscreen-next-session h2 {
+    color: #f54242;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 44px;
+    margin: 0 0 1vh 0;
+}
+
+#fullscreen-next-session .time {
+    color: #f54242;
+    font-size: 9vh;
+    font-weight: 800;
+    text-shadow: 0 0 20px rgba(245, 66, 66, 0.6);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+#fullscreen-next-session p {
+    color: white;
+    font-weight: 600;
+    font-size: 8vh;
+    margin: 0;
+}
+
+/* Bottom Section - Current and Upcoming */
+#bottom-timers-section {
+    width: 95%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 1vh; /* Add margin */
+}
+
+/* Container for Bottom Timers */
+#bottom-timers-container {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    gap: 5%;
+margin-bottom: 3%;
+}
+
+/* Current Session Timer */
+#fullscreen-current-session {
+    border: 2px solid #42f54e;
+    border-radius: 14px;
+    padding: 2vh; /* Restore padding */
+    width: 49%;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6), 0 0 20px rgba(66, 245, 78, 0.15);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribute space */
+    height: 25vh; /* Keep height */
+    background: linear-gradient(160deg, #1a1a1a, #050505);
+margin-top: -0px;
+}
+
+#fullscreen-current-session h2 {
+    color: #42f54e;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-size: 28px;
+    margin: 0 0 1vh 0;
+}
+
+#fullscreen-current-session .time {
+    color: #42f54e;
+    font-size: 6vh;
+    font-weight: 700;
+    text-shadow: 0 0 16px rgba(66, 245, 78, 0.5);
+    margin: 0;
+    animation: pulse-glow-green 2s ease-in-out infinite;
+}
+
+#fullscreen-current-session p {
+    color: white;
+    font-weight: 600;
+    font-size: 3vh;
+    margin: 0;
+}
+
+/* Upcoming Sessions Timer */
+#upcoming-sessions-container {
+    border: 2px solid #f54242;
+    border-radius: 14px;
+    padding: 2vh; /* Restore padding */
+    width: 49%;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 66, 66, 0.15);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribute space */
+    height: 25vh; /* Keep height */
+    background: linear-gradient(160deg, #363636, #262626);
+}
+
+#upcoming-sessions-container h2 {
+    color: #f54242;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-size: 28px;
+    margin: 0 0 1vh 0;
+}
+
+#upcoming-sessions-list {
+    width: 100%;
+}
+
+.upcoming-session-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1vh;
+    padding: 1vh;
+    border-bottom: 1px solid #555;
+    transition: background-color 0.2s ease;
+}
+
+.upcoming-session-item:hover {
+    background-color: rgba(245, 66, 66, 0.1);
+    border-radius: 6px;
+}
+
+.upcoming-session-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.upcoming-session-item .session-name {
+    color: white;
+    font-weight: 600;
+    font-size: 2.5vh;
+    flex-grow: 1;
+    text-align: left;
+}
+
+.upcoming-session-item .time {
+    color: #f54242;
+    font-weight: 700;
+    font-size: 2.5vh;
+    margin-left: 1em;
+    white-space: nowrap;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #bottom-timers-container,
+    #fullscreen-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #fullscreen-current-session,
+    #upcoming-sessions-container,
+    #fullscreen-next-session {
+        width: 95%;
+    }
+    /* Ensure equal height on smaller screens */
+    #fullscreen-current-session,
+    #upcoming-sessions-container {
+        height: auto;
+    }
+}
+
+        /* Table Styles - No Toggle */
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: linear-gradient(160deg, #363636, #262626);
+            border: 2px solid #f54242;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+        }
+        th, td { border: 1px solid rgba(245, 66, 66, 0.4); padding: 10px; text-align: center; color: white; }
+        th {
+            background: linear-gradient(135deg, #f54242, #a52a2a);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        tbody tr { transition: background-color 0.2s ease; }
+        tbody tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tbody tr:hover { background-color: rgba(245, 66, 66, 0.15); }
+
+        .date-header {
+            background: linear-gradient(135deg, #f54242, #b52323);
+            color: white;
+            padding: 12px;
+            margin: 30px auto 15px auto;
+            width: 80%;
+            border-radius: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .session-form {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(160deg, #3a3a3a, #262626);
+            padding: 25px;
+            border: 1px solid #f54242;
+            border-radius: 14px;
+            width: 80%;
+            max-width: 400px;
+            z-index: 1001;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.7);
+        }
+        .session-form h2 { font-family: 'Orbitron', sans-serif; color: #f54242; font-size: 1.2em; letter-spacing: 1px; }
+        .session-form input, .session-form button { margin: 10px 0; padding: 10px; width: calc(100% - 20px); font-size: 1em; font-family: 'Rajdhani', sans-serif; border: none; border-radius: 6px; }
+        .session-form input { background-color: #1e1e1e; color: white; border: 1px solid #555; }
+        .session-form button {
+            background: linear-gradient(135deg, #f54242, #b52323);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .session-form button:hover { transform: translateY(-2px); }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.75); backdrop-filter: blur(2px); z-index: 1000; }
+        .buttons-container { margin-top: 25px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .buttons-container button {
+            background: linear-gradient(135deg, #f54242, #b52323);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 1.15em;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .buttons-container button:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(245, 66, 66, 0.4); }
+        .action-buttons { display: none; }
+        .edit-mode .action-buttons { display: table-cell; }
+
+        .repeat-fields { display: flex; gap: 10px; }
+        .repeat-fields > div { flex: 1; text-align: left; }
+        .repeat-fields label { display: block; font-size: 0.8em; color: #ccc; margin-bottom: 3px; }
+
+        .review-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(160deg, #3a3a3a, #262626);
+            padding: 25px;
+            border: 1px solid #f54242;
+            border-radius: 14px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            z-index: 1001;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.7);
+            text-align: left;
+        }
+        .review-modal.active { display: flex; flex-direction: column; }
+        .review-modal h2 { font-family: 'Orbitron', sans-serif; color: #f54242; font-size: 1.2em; letter-spacing: 1px; text-align: center; margin: 0 0 10px 0; }
+        .review-hint { color: #ccc; font-size: 0.85em; margin: 0 0 15px 0; }
+        .guess-badge { display: inline-block; background: #f54242; color: white; border-radius: 50%; width: 1.4em; height: 1.4em; line-height: 1.4em; text-align: center; font-weight: 700; font-size: 0.8em; }
+
+        .review-table-wrap { overflow-y: auto; flex: 1; border: 1px solid #555; border-radius: 8px; }
+        .review-table { width: 100%; border-collapse: collapse; background: #262626; }
+        .review-table th { background: #1e1e1e; color: #f54242; font-family: 'Orbitron', sans-serif; font-size: 0.75em; letter-spacing: 1px; text-transform: uppercase; padding: 8px; position: sticky; top: 0; }
+        .review-table td { padding: 4px 6px; border-bottom: 1px solid #444; }
+        .review-table tr.guessed-row td { background-color: rgba(245, 66, 66, 0.12); }
+        .review-table input[type="text"], .review-table input[type="date"], .review-table input[type="time"] {
+            background-color: #1e1e1e; color: white; border: 1px solid #555; border-radius: 5px; padding: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.95em; width: 100%;
+        }
+        .review-table input[type="text"] { min-width: 220px; }
+        .review-table input[type="checkbox"] { width: 18px; height: 18px; }
+
+        .review-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .review-footer span { color: #ccc; font-size: 0.9em; }
+        .review-footer button { background: linear-gradient(135deg, #f54242, #b52323); color: white; border: none; padding: 10px 20px; margin-left: 10px; font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 1em; cursor: pointer; border-radius: 6px; transition: transform 0.15s ease; }
+        .review-footer button:hover { transform: translateY(-2px); }
+
+        .progress-bar { width: 100%; height: 10px; background: #1e1e1e; border-radius: 5px; overflow: hidden; margin: 15px 0; border: 1px solid #555; }
+        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(135deg, #f54242, #b52323); transition: width 0.2s ease; }
+        #scheduleStatusModal { text-align: center; max-width: 420px; }
+        #scheduleStatusModal button { background: linear-gradient(135deg, #f54242, #b52323); color: white; border: none; padding: 8px 18px; font-family: 'Rajdhani', sans-serif; font-weight: 600; cursor: pointer; border-radius: 6px; margin-top: 5px; }
+
+    </style>
+</head>
+<body>
+    <div class="top-banner">
+        <img src="DFK ZWT.png" alt="DFK Kart Racing Team">
+    </div>
+    <h1>Time Schedule IAME Benelux Collective Test</h1>
+    <div class="checkered-divider"></div>
+
+    <button id="fullscreen-btn" onclick="toggleFullscreen()">Fullscreen</button>
+
+    <!-- Normal Timers -->
+    <div id="countdown" class="timer">
+        <h2>Next Session</h2>
+        <p>Loading...</p>
+        <div class="time"></div>
+    </div>
+
+    <div id="current-session" class="timer current-session hidden">
+        <h2>Current Session</h2>
+        <p>No active session</p>
+        <div class="time"></div>
+    </div>
+
+    <!-- Fullscreen Container -->
+    <div id="fullscreen-container" class="fullscreen-container">
+        <!-- Top Section: Current Time -->
+        <div id="current-time-section">
+            <div class="fullscreen-timer-current-time">
+                <img src="DFK ZWT.png" alt="Left Image">
+                <div> <!-- Container for title and time -->
+                    <h2>Time Of The Day</h2>
+                    <div class="time" id="current-time-fullscreen"></div>
+                </div>
+                <img src="DFK ZWT.png" alt="Right Image">
+            </div>
+        </div>
+
+        <!-- Middle Section: Next Session -->
+        <div id="next-session-section">
+            <div class="timer" id="fullscreen-next-session">
+                <h2>Next Session</h2>
+                <p id="next-session-name-fullscreen">Loading...</p>
+                <div class="time"></div>
+            </div>
+        </div>
+
+        <!-- Bottom Section: Current and Upcoming -->
+        <div id="bottom-timers-section">
+            <div id="bottom-timers-container">
+                <!-- Current Session Timer -->
+                <div class="timer" id="fullscreen-current-session">
+                    <h2>Current Session</h2>
+                    <p id="current-session-name-fullscreen">No active session</p>
+                    <div class="time"></div>
+                </div>
+
+                <!-- Combined Upcoming Sessions (Schedule Timer) -->
+                <div id="upcoming-sessions-container">
+                    <h2>Schedule Timer</h2>
+                    <div id="upcoming-sessions-list">
+                        <!-- Upcoming sessions will be added here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- ... (rest of the HTML remains the same) ... -->
+    <div id="schedule-container"></div>
+
+    <div class="buttons-container">
+        <button onclick="toggleEditMode()">Edit</button>
+        <button onclick="openAddSessionForm()">Add Session</button>
+        <button onclick="downloadCSV()">Download CSV</button>
+        <input type="file" id="uploadCSV" accept=".csv" onchange="uploadCSV(event)" style="display: none;">
+        <button onclick="document.getElementById('uploadCSV').click()">Upload CSV</button>
+        <input type="file" id="uploadSchedule" accept="application/pdf" onchange="handleScheduleUpload(event)" style="display: none;">
+        <button onclick="document.getElementById('uploadSchedule').click()">Upload PDF</button>
+        <button onclick="clearSchedule()">Clear Schedule</button>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closeSessionForm()"></div>
+    <div class="session-form" id="sessionForm">
+        <h2>Add a new session</h2>
+        <input type="date" id="sessionDate" placeholder="Date">
+        <input type="text" id="sessionName" placeholder="Session Name">
+        <input type="time" id="sessionStartTime" placeholder="Start Time">
+        <input type="time" id="sessionEndTime" placeholder="End Time">
+        <div class="repeat-fields" id="repeatFields">
+            <div>
+                <label for="sessionRepeatCount">Aantal keer</label>
+                <input type="number" id="sessionRepeatCount" min="1" value="1">
+            </div>
+            <div>
+                <label for="sessionRepeatInterval">Interval (min)</label>
+                <input type="number" id="sessionRepeatInterval" min="1" value="60">
+            </div>
+        </div>
+        <button onclick="addSession()">Add</button>
+        <button onclick="closeSessionForm()">Cancel</button>
+    </div>
+
+    <div class="overlay" id="scheduleOverlay"></div>
+    <div class="review-modal" id="scheduleStatusModal">
+        <h2>PDF verwerken...</h2>
+        <p id="scheduleStatusText">Bezig...</p>
+        <div class="progress-bar"><div class="progress-bar-fill" id="scheduleProgressFill"></div></div>
+        <button onclick="closeScheduleStatus()">Annuleren</button>
+    </div>
+
+    <div class="review-modal" id="reviewModal">
+        <h2>Controleer gevonden sessies</h2>
+        <p class="review-hint">Regels met een <span class="guess-badge">?</span> hadden geen duidelijke eindtijd (gegokt op basis van de duur-tekst) of geen datum in de PDF. "Pre-grid Open"-regels zijn automatisch toegevoegd (open = 15 min voor de pre-grid sluit, sluit = de deadline) voor heats/finales die dat vermelden. Controleer en pas aan waar nodig, vink uit wat je niet wil toevoegen.</p>
+        <div class="review-table-wrap">
+            <table class="review-table">
+                <thead>
+                    <tr><th></th><th>Datum</th><th>Naam</th><th>Start</th><th>Eind</th></tr>
+                </thead>
+                <tbody id="reviewTableBody"></tbody>
+            </table>
+        </div>
+        <div class="review-footer">
+            <span id="reviewCount"></span>
+            <div>
+                <button onclick="confirmReviewRows()">Toevoegen</button>
+                <button onclick="closeReviewModal()">Annuleren</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // JavaScript - No Table Toggle
+        // Shared schedule storage - a single row (id=1) in Supabase holds the
+        // whole sessions list, so every device reads/writes the same data
+        // instead of each browser's own localStorage.
+        const SUPABASE_URL = "https://crcoknyrshtfeyzdiciu.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyY29rbnlyc2h0ZmV5emRpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3OTEzMzksImV4cCI6MjEwMDM2NzMzOX0.7mpB0WQGfdmwWbHrzXKiFGpsdslgIlDPUU3QrfDOOM4";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let sessions = [];
+        let editMode = false;
+        let editingSessionIndex = null;
+
+        async function loadSessions() {
+            const { data, error } = await supabaseClient.from("schedule").select("sessions").eq("id", 1).single();
+            if (error) {
+                console.error("Kon schema niet laden uit Supabase:", error.message);
+                return;
+            }
+            sessions = data.sessions || [];
+            updateSchedule();
+        }
+
+        async function saveSessions() {
+            const { error } = await supabaseClient
+                .from("schedule")
+                .update({ sessions, updated_at: new Date().toISOString() })
+                .eq("id", 1);
+            if (error) console.error("Kon schema niet opslaan naar Supabase:", error.message);
+        }
+
+        function subscribeToScheduleChanges() {
+            supabaseClient
+                .channel("schedule-changes")
+                .on("postgres_changes", { event: "UPDATE", schema: "public", table: "schedule", filter: "id=eq.1" }, payload => {
+                    sessions = payload.new.sessions || [];
+                    updateSchedule();
+                })
+                .subscribe();
+        }
+
+        function toggleEditMode() {
+            editMode = !editMode;
+            document.body.classList.toggle("edit-mode", editMode);
+            updateSchedule();
+        }
+
+        function openAddSessionForm() {
+            editingSessionIndex = null;
+            toggleSessionForm();
+        }
+
+        function toggleSessionForm() {
+            document.getElementById("overlay").style.display = "block";
+            document.getElementById("sessionForm").style.display = "block";
+            document.getElementById("sessionRepeatCount").value = 1;
+            document.getElementById("sessionRepeatInterval").value = 60;
+            document.getElementById("repeatFields").style.display = editingSessionIndex === null ? "flex" : "none";
+        }
+
+        function closeSessionForm() {
+            document.getElementById("overlay").style.display = "none";
+            document.getElementById("sessionForm").style.display = "none";
+            if (editingSessionIndex !== null) {
+                editingSessionIndex = null;
+            }
+        }
+
+        function addMinutesToTime(hhmm, minutes) {
+            const [h, m] = hhmm.split(":").map(Number);
+            let total = (h * 60 + m + minutes) % 1440;
+            if (total < 0) total += 1440;
+            return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+        }
+
+        function addSession() {
+            const date = document.getElementById("sessionDate").value;
+            const name = document.getElementById("sessionName").value;
+            const startTime = document.getElementById("sessionStartTime").value;
+            const endTime = document.getElementById("sessionEndTime").value;
+
+            if (date && name && startTime && endTime) {
+                if (editingSessionIndex !== null) {
+                    sessions[editingSessionIndex] = { date, name, startTime, endTime, duration: calculateDuration(startTime, endTime) };
+                    editingSessionIndex = null;
+                } else {
+                    const repeatCount = Math.max(1, parseInt(document.getElementById("sessionRepeatCount").value, 10) || 1);
+                    const repeatInterval = Math.max(1, parseInt(document.getElementById("sessionRepeatInterval").value, 10) || 60);
+                    for (let i = 0; i < repeatCount; i++) {
+                        const s = addMinutesToTime(startTime, repeatInterval * i);
+                        const e = addMinutesToTime(endTime, repeatInterval * i);
+                        sessions.push({ date, name, startTime: s, endTime: e, duration: calculateDuration(s, e) });
+                    }
+                }
+
+                sessions.sort((a, b) => new Date(`${a.date}T${a.startTime}`) - new Date(`${b.date}T${b.startTime}`));
+                saveSessions();
+                updateSchedule();
+                closeSessionForm();
+            }
+        }
+
+        function calculateDuration(startTime, endTime) {
+            const start = new Date(`1970-01-01T${startTime}:00`);
+            const end = new Date(`1970-01-01T${endTime}:00`);
+            if (end <= start) return "00:00";
+            const diff = (end - start) / (1000 * 60);
+            const hours = Math.floor(diff / 60).toString().padStart(2, '0');
+            const minutes = (diff % 60).toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        function editSession(index) {
+            const session = sessions[index];
+            document.getElementById("sessionDate").value = session.date;
+            document.getElementById("sessionName").value = session.name;
+            document.getElementById("sessionStartTime").value = session.startTime;
+            document.getElementById("sessionEndTime").value = session.endTime;
+            editingSessionIndex = index;
+            toggleSessionForm();
+        }
+
+        function removeSession(index) {
+            sessions.splice(index, 1);
+            saveSessions();
+            updateSchedule();
+        }
+
+        function clearSchedule() {
+            if (!sessions.length) return;
+            if (!confirm(`Weet je zeker dat je alle ${sessions.length} sessies wil verwijderen? Dit kan niet ongedaan worden gemaakt.`)) return;
+            sessions = [];
+            saveSessions();
+            updateSchedule();
+        }
+
+        function formatDate(dateString) {
+            const [year, month, day] = dateString.split("-");
+            return `${day}-${month}-${year}`;
+        }
+
+        function toggleFullscreen() {
+            const container = document.getElementById("fullscreen-container");
+            container.classList.toggle("active");
+
+            if (container.classList.contains("active")) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+            updateSchedule();
+        }
+
+        function updateTimer(element, targetTime, excludeSeconds = false) {
+            if (!element) return;
+            const now = new Date().getTime();
+            const distance = targetTime - now;
+
+            if (distance <= 0) {
+                const timeElement = element.querySelector('.time');
+                if (timeElement) {
+                    timeElement.textContent = excludeSeconds ? '0m' : '0s';
+                }
+                return;
+            }
+
+            let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            let timerString = '';
+            if (days > 0) timerString += `${days}d `;
+            if (hours > 0) timerString += `${hours}h `;
+            if (minutes > 0) timerString += `${minutes}m `;
+            if (!excludeSeconds) {
+                timerString += `${seconds}s`;
+            }
+
+            const timeElement = element.querySelector('.time');
+            if (timeElement) {
+                timeElement.textContent = timerString.trim();
+            }
+        }
+
+        function downloadCSV() {
+            const csvContent = "data:text/csv;charset=utf-8," + sessions.map(s => `${s.date},${s.name},${s.startTime},${s.endTime},${s.duration}`).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "schedule.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function uploadCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const rows = e.target.result.split("\n").map(row => {
+                    const [date, name, startTime, endTime] = row.split(",");
+                    return date && name && startTime && endTime ? { date: date.trim(), name: name.trim(), startTime: startTime.trim(), endTime: endTime.trim(), duration: calculateDuration(startTime, endTime) } : null;
+                }).filter(session => session !== null);
+                sessions = Array.from(new Set([...sessions, ...rows].map(JSON.stringify))).map(JSON.parse);
+                saveSessions();
+                updateSchedule();
+            };
+            reader.readAsText(file);
+        }
+
+        function updateSchedule() {
+            const now = new Date();
+            let nextSession = null;
+            let nextSessionIsPreGrid = false;
+            let currentSession = null;
+            let currentSessionIsPreGrid = false;
+            let nextTime = Infinity;
+
+            sessions = sessions.filter(s => new Date(`${s.date}T${s.endTime}`) >= now)
+                               .sort((a, b) => new Date(`${a.date}T${b.startTime}`) - new Date(`${b.date}T${b.startTime}`));
+
+            const scheduleContainer = document.getElementById("schedule-container");
+            scheduleContainer.innerHTML = ""; // Clear previous content
+
+            const groupedSessions = sessions.reduce((acc, session, index) => {
+                (acc[session.date] = acc[session.date] || []).push({ ...session, index });
+                return acc;
+            }, {});
+
+            for (const date in groupedSessions) {
+                // Create a container for the date header and table
+                const dayContainer = document.createElement("div");
+
+                // Date header (NOT clickable)
+                const dateHeader = document.createElement("div");
+                dateHeader.className = "date-header";
+                dateHeader.textContent = formatDate(date);
+                dayContainer.appendChild(dateHeader);
+
+                // Table (always visible)
+                const table = document.createElement("table");
+                table.id = `table-${date}`;
+                const actionsHeader = editMode ? '<th class="action-buttons">Actions</th>' : '';
+                table.innerHTML = `<thead><tr><th>Start Time</th><th>End Time</th><th>Session</th><th>Duration</th>${actionsHeader}</tr></thead>
+                                   <tbody>${groupedSessions[date].map(s => {
+                                       const actionButtons = editMode ? `<td class="action-buttons"><button onclick="editSession(${s.index})">Edit</button><button onclick="removeSession(${s.index})">Delete</button></td>` : '';
+                                       return `<tr><td>${s.startTime}</td><td>${s.endTime}</td><td>${s.name}</td><td>${s.duration}</td>${actionButtons}</tr>`;
+                                   }).join('')}</tbody>`;
+                dayContainer.appendChild(table);
+
+                // Add the container to the main schedule container
+                scheduleContainer.appendChild(dayContainer);
+            }
+          // ... (rest of updateSchedule function remains the same) ...
+
+            sessions.forEach(session => {
+                const startTime = new Date(`${session.date}T${session.startTime}`).getTime();
+                const endTime = new Date(`${session.date}T${session.endTime}`).getTime();
+                if (startTime > now) {
+                    const isPreGridNext = session.name.startsWith("Pre-grid Open");
+                    // On an exact tie for soonest-upcoming, the pre-grid
+                    // deadline should still win over a regular session.
+                    if (startTime < nextTime || (startTime === nextTime && isPreGridNext && !nextSessionIsPreGrid)) {
+                        nextTime = startTime;
+                        nextSession = session;
+                        nextSessionIsPreGrid = isPreGridNext;
+                    }
+                }
+                if (startTime <= now && endTime >= now) {
+                    // A pre-grid deadline always overlaps with the session
+                    // racing before it - it must win the "current" slot even
+                    // though that other session is technically still running,
+                    // since missing the pre-grid gate is the more urgent thing.
+                    const isPreGrid = session.name.startsWith("Pre-grid Open");
+                    if (!currentSession || (isPreGrid && !currentSessionIsPreGrid)) {
+                        currentSession = session;
+                        currentSessionIsPreGrid = isPreGrid;
+                    }
+                }
+            });
+
+            const countdownElement = document.getElementById("countdown");
+            if (nextSession) {
+                updateTimer(countdownElement, new Date(`${nextSession.date}T${nextSession.startTime}`).getTime());
+                countdownElement.querySelector('p').textContent = nextSession.name;
+            } else {
+                countdownElement.querySelector('p').textContent = "No upcoming session";
+                updateTimer(countdownElement, null);
+            }
+
+            const currentSessionElement = document.getElementById("current-session");
+            if (currentSession) {
+                currentSessionElement.classList.remove("hidden");
+                currentSessionElement.querySelector('p').textContent = currentSession.name;
+                updateTimer(currentSessionElement, new Date(`${currentSession.date}T${currentSession.endTime}`).getTime());
+            } else {
+                currentSessionElement.classList.add("hidden");
+                currentSessionElement.querySelector('p').textContent = "No active session";
+                updateTimer(currentSessionElement, null);
+            }
+
+            const isFullscreenActive = document.getElementById("fullscreen-container").classList.contains("active");
+            if (isFullscreenActive) {
+                updateCurrentTimeFullscreen();
+
+                // Next Session Timer (Fullscreen)
+                const fullscreenNextSession = document.getElementById("fullscreen-next-session");
+                if (nextSession) {
+                    updateTimer(fullscreenNextSession, new Date(`${nextSession.date}T${nextSession.startTime}`).getTime());
+                    document.getElementById("next-session-name-fullscreen").textContent = nextSession.name;
+                } else {
+                    document.getElementById("next-session-name-fullscreen").textContent = "No upcoming session";
+                    if (fullscreenNextSession) fullscreenNextSession.querySelector('.time').textContent = '';
+                }
+
+                // Current Session Timer (Fullscreen)
+                const fullscreenCurrentSession = document.getElementById("fullscreen-current-session");
+                if (currentSession) {
+                    fullscreenCurrentSession.classList.remove("hidden"); // Ensure it's visible
+                    updateTimer(fullscreenCurrentSession, new Date(`${currentSession.date}T${currentSession.endTime}`).getTime());
+                    document.getElementById("current-session-name-fullscreen").textContent = currentSession.name;
+                } else {
+                    fullscreenCurrentSession.classList.add("hidden"); // Hide if no current session
+                    document.getElementById("current-session-name-fullscreen").textContent = "No active session";
+                    if (fullscreenCurrentSession) fullscreenCurrentSession.querySelector('.time').textContent = '';
+                }
+
+                // Combined Upcoming Sessions (Schedule Timer - Fullscreen) - LIMIT TO 3
+                const upcomingSessionsList = document.getElementById("upcoming-sessions-list");
+                upcomingSessionsList.innerHTML = "";
+
+                let upcomingSessions = [];
+                if (nextSession) {
+                    let nextSessionIndex = sessions.indexOf(nextSession);
+                    upcomingSessions = sessions.slice(nextSessionIndex + 1, nextSessionIndex + 4); // Get next *3* sessions
+                }
+
+                upcomingSessions.forEach(session => {
+                    const sessionItem = document.createElement("div");
+                    sessionItem.classList.add("upcoming-session-item");
+                    sessionItem.innerHTML = `
+                        <div class="session-name">${session.name}</div>
+                        <div class="time"></div>
+                    `;
+                    // Exclude seconds for upcoming sessions
+                    updateTimer(sessionItem, new Date(`${session.date}T${session.startTime}`).getTime(), true);
+                    upcomingSessionsList.appendChild(sessionItem);
+                });
+            }
+
+            clearTimeout(updateSchedule.timeout);
+            updateSchedule.timeout = setTimeout(updateSchedule, 1000);
+        }
+
+        function updateCurrentTimeFullscreen() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById("current-time-fullscreen").textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // --- Schedule import from PDF -----------------------------------
+        const SCHEDULE_TIME_RE = /^\d{1,2}:\d{2}$/;
+        // OCR/odd exports sometimes drop or garble the colon in times
+        // ("16:30" -> "1630", "16.30", "16 30"). Recover it before the
+        // strict HH:MM check runs.
+        const SCHEDULE_TIME_LOOSE_RE = /^(\d{1,2})[.\s\-:]?(\d{2})$/;
+        function normalizeTimeToken(raw) {
+            const c = (raw || "").trim();
+            if (SCHEDULE_TIME_RE.test(c)) return c;
+            const m = SCHEDULE_TIME_LOOSE_RE.exec(c);
+            if (!m) return c;
+            const hour = parseInt(m[1], 10), minute = parseInt(m[2], 10);
+            if (hour > 23 || minute > 59) return c;
+            return `${hour}:${String(minute).padStart(2, '0')}`;
+        }
+
+        const SCHEDULE_TIME_RANGE_FRAGMENT_RE = /\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}/;
+        const SCHEDULE_DURATION_RE = /(\d+)\s*(?:min|minutes|')\s*(\+\s*1\s*lap)?/i;
+        // Session/class text containing any of these (case-insensitive) is
+        // treated as logistics, not an on-track session, and left out.
+        const SCHEDULE_SKIP_KEYWORDS = ["voucher", "scan tyre", "tyres scanning", "mounting", "admin",
+            "servicing parc", "pre-grid", "pregrid", "mechanics out", "technical control", "purchase tyres",
+            "truck-paddock", "warming up", "duration"];
+        // Free-floating legend text outside any real table (e.g. an "engine
+        // warm-up time slots" box) tends to read as "for Heat 1", "for Final".
+        const SCHEDULE_LEGEND_FRAGMENT_RE = /^for\s/i;
+
+        // English, Dutch and French month names - schedules for this event
+        // series mix all three, and future events/organizers may too.
+        const SCHEDULE_MONTHS = {
+            january: 1, february: 2, march: 3, april: 4, may: 5, june: 6, july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+            januari: 1, februari: 2, maart: 3, mei: 5, juni: 6, juli: 7, augustus: 8, oktober: 10,
+            janvier: 1, février: 2, mars: 3, avril: 4, mai: 5, juin: 6, juillet: 7, août: 8, septembre: 9, octobre: 10, novembre: 11, décembre: 12,
+        };
+        const SCHEDULE_DATE_TEXT_RE = new RegExp("(\\d{4})\\s+(" + Object.keys(SCHEDULE_MONTHS).join("|") + ")\\s+(\\d{1,2})(?:st|nd|rd|th)?", "gi");
+        // Purely numeric dates: 23/07/2026, 23-07-2026, or 2026-07-23.
+        const SCHEDULE_DATE_NUMERIC_RE = /\b(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})\b|\b(\d{4})-(\d{2})-(\d{2})\b/g;
+
+        function findLastScheduleDate(text) {
+            const t = text || "";
+            let m, last = null, lastIndex = -1;
+            SCHEDULE_DATE_TEXT_RE.lastIndex = 0;
+            while ((m = SCHEDULE_DATE_TEXT_RE.exec(t)) !== null) {
+                const month = SCHEDULE_MONTHS[m[2].toLowerCase()];
+                last = `${m[1]}-${String(month).padStart(2, '0')}-${String(parseInt(m[3], 10)).padStart(2, '0')}`;
+                lastIndex = m.index;
+            }
+            let m2, lastNumeric = null, lastNumericIndex = -1;
+            SCHEDULE_DATE_NUMERIC_RE.lastIndex = 0;
+            while ((m2 = SCHEDULE_DATE_NUMERIC_RE.exec(t)) !== null) {
+                if (m2[4]) {
+                    lastNumeric = `${m2[4]}-${m2[5]}-${m2[6]}`;
+                } else {
+                    lastNumeric = `${m2[3]}-${m2[2].padStart(2, '0')}-${m2[1].padStart(2, '0')}`;
+                }
+                lastNumericIndex = m2.index;
+            }
+            if (lastNumericIndex > lastIndex) return lastNumeric;
+            return last;
+        }
+
+        function parseScheduleDurationMinutes(text) {
+            const m = SCHEDULE_DURATION_RE.exec(text);
+            if (!m) return null;
+            return parseInt(m[1], 10) + (m[2] ? 1 : 0);
+        }
+
+        // Groups text fragments into table rows by vertical proximity, then
+        // splits each row into cells wherever the horizontal gap between two
+        // fragments is bigger than a normal word-spacing gap.
+        function clusterFragmentsIntoRows(items, yTol, gap) {
+            const remaining = items.slice();
+            const lines = [];
+            while (remaining.length) {
+                const seed = remaining.shift();
+                const line = [seed];
+                for (let i = remaining.length - 1; i >= 0; i--) {
+                    if (Math.abs(remaining[i].y - seed.y) <= yTol) {
+                        line.push(remaining[i]);
+                        remaining.splice(i, 1);
+                    }
+                }
+                lines.push(line);
+            }
+            return lines.map(line => {
+                const sorted = line.slice().sort((a, b) => a.x - b.x);
+                const cells = [];
+                let current = null;
+                for (const it of sorted) {
+                    if (!current) {
+                        current = { text: it.text, endX: it.x + it.width };
+                    } else if (it.x - current.endX > gap) {
+                        cells.push(current.text.trim());
+                        current = { text: it.text, endX: it.x + it.width };
+                    } else {
+                        current.text += " " + it.text;
+                        current.endX = it.x + it.width;
+                    }
+                }
+                if (current) cells.push(current.text.trim());
+                return cells;
+            });
+        }
+
+        // A "From, To, ..." row can be used directly, but a "From, Servicing
+        // Parc Open, ..." row (heats/finals) has its real end time implied by
+        // the duration text instead - detected because the second time value
+        // is earlier than the first, not later.
+        // How long before pre-grid closing time the gate opens. Karts must be
+        // in by the closing time - missing it means missing the session, so
+        // this deadline is tracked as its own entry, separate from the session.
+        const PRE_GRID_OPEN_MINUTES_BEFORE_CLOSE = 15;
+
+        function processScheduleRow(cells, currentDate) {
+            const times = [], texts = [];
+            for (const raw of cells) {
+                const c = (raw || "").trim();
+                if (!c) continue;
+                const normalized = normalizeTimeToken(c);
+                if (SCHEDULE_TIME_RE.test(normalized)) times.push(normalized);
+                else if (c.toUpperCase() !== "X") texts.push(c.replace(/\s+/g, " "));
+            }
+            if (!times.length || !texts.length) return [];
+
+            const kept = [];
+            for (const t of texts) {
+                const lt = t.toLowerCase();
+                if (SCHEDULE_SKIP_KEYWORDS.some(kw => lt.includes(kw))) continue;
+                if (SCHEDULE_TIME_RANGE_FRAGMENT_RE.test(t)) continue;
+                if (SCHEDULE_LEGEND_FRAGMENT_RE.test(t)) continue;
+                kept.push(t);
+            }
+            if (!kept.length) return [];
+
+            const name = [...new Set(kept)].join(" | ").replace(/,/g, " ");
+            let start, end, guessed = false, pregridClosing = null;
+
+            if (times.length >= 2 && scheduleTimeToMinutes(times[1]) > scheduleTimeToMinutes(times[0])) {
+                start = times[0];
+                end = times[1];
+            } else if (times.length >= 2) {
+                start = times[0];
+                end = addMinutesToTime(start, parseScheduleDurationMinutes(name) ?? 12);
+                guessed = true;
+                // Column order on these rows is From, Servicing Parc Open,
+                // Pre-grid Closing, Mechanics Out - times[2] is the deadline
+                // used below for the "Pre-grid Open" entry's end time.
+                if (times.length >= 3) pregridClosing = times[2];
+            } else {
+                start = times[0];
+                end = addMinutesToTime(start, parseScheduleDurationMinutes(name) ?? 30);
+                guessed = true;
+            }
+
+            // Heats/finals are only tracked by their pre-grid deadline - the
+            // on-track session time itself isn't shown separately for those.
+            if (pregridClosing) {
+                return [{
+                    date: currentDate || "",
+                    name: `Pre-grid Open | ${name}`,
+                    startTime: addMinutesToTime(pregridClosing, -PRE_GRID_OPEN_MINUTES_BEFORE_CLOSE),
+                    endTime: pregridClosing,
+                    guessed: !currentDate,
+                }];
+            }
+            return [{ date: currentDate || "", name, startTime: start, endTime: end, guessed: guessed || !currentDate }];
+        }
+
+        function scheduleTimeToMinutes(hhmm) {
+            const [h, m] = hhmm.split(":").map(Number);
+            return h * 60 + m;
+        }
+
+        // Pixel-based row/column tolerances only make sense relative to how
+        // big the text actually is on the page - calibrated against a real
+        // multi-page IAME/karting timing PDF.
+        function adaptiveTolerances(items, fallbackYTol, fallbackGap) {
+            const heights = items.map(it => it.height).filter(h => h > 0).sort((a, b) => a - b);
+            if (!heights.length) return { yTol: fallbackYTol, gap: fallbackGap };
+            const medianHeight = heights[Math.floor(heights.length / 2)];
+            return { yTol: Math.max(2, medianHeight * 0.3), gap: Math.max(4, medianHeight * 0.6) };
+        }
+
+        function promptForScheduleDate() {
+            const input = window.prompt(
+                "Geen datum gevonden in deze PDF. Voor welke datum is dit schema? (JJJJ-MM-DD)", ""
+            );
+            if (input && /^\d{4}-\d{1,2}-\d{1,2}$/.test(input.trim())) {
+                const [y, mo, d] = input.trim().split("-");
+                return `${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')}`;
+            }
+            return "";
+        }
+
+        function wordsToScheduleRows(items, date, fallbackYTol, fallbackGap) {
+            const { yTol, gap } = adaptiveTolerances(items, fallbackYTol, fallbackGap);
+            const rows = clusterFragmentsIntoRows(items, yTol, gap);
+            const results = [];
+            for (const cells of rows) {
+                results.push(...processScheduleRow(cells, date || ""));
+            }
+            return results;
+        }
+
+        async function parseSchedulePdf(file, onProgress) {
+            const buf = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+            const results = [];
+            let currentDate = null;
+            let pagesWithoutText = 0;
+            for (let p = 1; p <= pdf.numPages; p++) {
+                if (onProgress) onProgress(`Pagina ${p} van ${pdf.numPages}...`, (p - 1) / pdf.numPages);
+                const page = await pdf.getPage(p);
+                const content = await page.getTextContent();
+                const items = content.items
+                    .filter(it => it.str.trim() !== "")
+                    .map(it => ({ text: it.str, x: it.transform[4], y: it.transform[5], width: it.width || 1, height: it.height || 10 }));
+
+                if (items.length < 3) {
+                    // No real text layer on this page (e.g. a scanned image) -
+                    // there's no OCR fallback, so this page is skipped.
+                    pagesWithoutText++;
+                    continue;
+                }
+
+                const fullText = items.map(it => it.text).join(" ");
+                const pageDate = findLastScheduleDate(fullText);
+                if (pageDate) currentDate = pageDate;
+                if (!currentDate) currentDate = promptForScheduleDate();
+                results.push(...wordsToScheduleRows(items, currentDate, 3, 8));
+            }
+            if (pagesWithoutText > 0 && results.length === 0) {
+                throw new Error("Deze PDF lijkt een gescande afbeelding te zijn zonder herkenbare tekst. Vul het schema handmatig in.");
+            }
+            return results;
+        }
+
+        let pendingReviewRows = [];
+
+        function showScheduleStatus(text, progress) {
+            document.getElementById("scheduleOverlay").style.display = "block";
+            document.getElementById("scheduleStatusModal").classList.add("active");
+            document.getElementById("scheduleStatusText").textContent = text;
+            document.getElementById("scheduleProgressFill").style.width = `${Math.round((progress || 0) * 100)}%`;
+        }
+
+        function closeScheduleStatus() {
+            document.getElementById("scheduleOverlay").style.display = "none";
+            document.getElementById("scheduleStatusModal").classList.remove("active");
+        }
+
+        async function handleScheduleUpload(event) {
+            const file = event.target.files[0];
+            event.target.value = "";
+            if (!file) return;
+
+            showScheduleStatus("PDF wordt geopend...", 0);
+            try {
+                const rows = await parseSchedulePdf(file, (text, progress) => showScheduleStatus(text, progress));
+                closeScheduleStatus();
+                if (!rows.length) {
+                    alert("Geen sessies gevonden in deze PDF. Probeer een duidelijkere PDF of gebruik het CSV-sjabloon.");
+                    return;
+                }
+                rows.sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime));
+                pendingReviewRows = rows;
+                openReviewModal();
+            } catch (err) {
+                closeScheduleStatus();
+                alert("Verwerken is mislukt: " + err.message);
+            }
+        }
+
+        function openReviewModal() {
+            const tbody = document.getElementById("reviewTableBody");
+            tbody.innerHTML = pendingReviewRows.map((row, i) => `
+                <tr class="${row.guessed ? 'guessed-row' : ''}" data-index="${i}">
+                    <td><input type="checkbox" checked data-field="include"></td>
+                    <td><input type="date" value="${row.date}" data-field="date"></td>
+                    <td><input type="text" value="${row.name.replace(/"/g, '&quot;')}" data-field="name">${row.guessed ? ` <span class="guess-badge" title="${row.date ? 'Eindtijd gegokt' : 'Geen datum gevonden - vul in'}">?</span>` : ''}</td>
+                    <td><input type="time" value="${row.startTime}" data-field="startTime"></td>
+                    <td><input type="time" value="${row.endTime}" data-field="endTime"></td>
+                </tr>
+            `).join("");
+            document.getElementById("reviewCount").textContent = `${pendingReviewRows.length} sessies gevonden`;
+            document.getElementById("scheduleOverlay").style.display = "block";
+            document.getElementById("reviewModal").classList.add("active");
+        }
+
+        function closeReviewModal() {
+            document.getElementById("scheduleOverlay").style.display = "none";
+            document.getElementById("reviewModal").classList.remove("active");
+            pendingReviewRows = [];
+        }
+
+        function confirmReviewRows() {
+            const rows = document.querySelectorAll("#reviewTableBody tr");
+            let added = 0;
+            rows.forEach(tr => {
+                const include = tr.querySelector('[data-field="include"]').checked;
+                if (!include) return;
+                const date = tr.querySelector('[data-field="date"]').value;
+                const name = tr.querySelector('[data-field="name"]').value.trim();
+                const startTime = tr.querySelector('[data-field="startTime"]').value;
+                const endTime = tr.querySelector('[data-field="endTime"]').value;
+                if (!date || !name || !startTime || !endTime) return;
+                sessions.push({ date, name, startTime, endTime, duration: calculateDuration(startTime, endTime) });
+                added++;
+            });
+            sessions.sort((a, b) => new Date(`${a.date}T${a.startTime}`) - new Date(`${b.date}T${b.startTime}`));
+            saveSessions();
+            updateSchedule();
+            closeReviewModal();
+            alert(`${added} sessie(s) toegevoegd aan het schema.`);
+        }
+
+        loadSessions();
+        subscribeToScheduleChanges();
+
+    </script>
+</body>
+</html>
