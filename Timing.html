@@ -145,10 +145,6 @@
     padding: 2vh;
     padding-top: max(2vh, 34px); /* Clear space for the fixed control buttons */
     overflow: hidden; /* Prevent scrollbars */
-    outline: 3px solid yellow; /* TEMP DEBUG */
-}
-#current-time-section, #next-session-section, #bottom-timers-section, #bottom-timers-container {
-    outline: 3px solid lime; /* TEMP DEBUG */
 }
 
 
@@ -611,7 +607,7 @@ margin-top: -0px;
 
         <!-- Middle Section: Next Session -->
         <div id="next-session-section">
-            <div class="timer" id="fullscreen-next-session">
+            <div id="fullscreen-next-session">
                 <h2>Next Session</h2>
                 <p id="next-session-name-fullscreen">Loading...</p>
                 <div class="time"></div>
@@ -622,7 +618,7 @@ margin-top: -0px;
         <div id="bottom-timers-section">
             <div id="bottom-timers-container">
                 <!-- Current Session Timer -->
-                <div class="timer" id="fullscreen-current-session">
+                <div id="fullscreen-current-session">
                     <h2>Current Session</h2>
                     <p id="current-session-name-fullscreen">No active session</p>
                     <div class="time"></div>
