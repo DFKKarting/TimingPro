@@ -925,6 +925,13 @@ margin-top: -0px;
             return `${day}-${month}-${year}`;
         }
 
+        // Ties a trailing number to the word right before it (e.g. "Group 1",
+        // "Test 4") with a non-breaking space, so it can never wrap onto its
+        // own line and end up looking like an unrelated stray number.
+        function formatSessionName(name) {
+            return (name || "").replace(/ (\d+)\b/g, " $1");
+        }
+
         // The countdown board is always shown in its "fullscreen" layout now
         // (no toggle needed for that) - this button only asks the browser to
         // hide its own chrome (address bar etc.) for a true kiosk look.
@@ -1060,7 +1067,7 @@ margin-top: -0px;
                 table.innerHTML = `<thead><tr><th>Start Time</th><th>End Time</th><th>Session</th><th>Duration</th>${actionsHeader}</tr></thead>
                                    <tbody>${groupedSessions[date].map(s => {
                                        const actionButtons = editMode ? `<td class="action-buttons"><button onclick="editSession(${s.index})">Edit</button><button onclick="removeSession(${s.index})">Delete</button></td>` : '';
-                                       return `<tr><td>${s.startTime}</td><td>${s.endTime}</td><td>${s.name}</td><td>${s.duration}</td>${actionButtons}</tr>`;
+                                       return `<tr><td>${s.startTime}</td><td>${s.endTime}</td><td>${formatSessionName(s.name)}</td><td>${s.duration}</td>${actionButtons}</tr>`;
                                    }).join('')}</tbody>`;
                 dayContainer.appendChild(table);
 
@@ -1123,7 +1130,7 @@ margin-top: -0px;
                 const fullscreenNextSession = document.getElementById("fullscreen-next-session");
                 if (nextSession) {
                     updateTimer(fullscreenNextSession, new Date(`${nextSession.date}T${nextSession.startTime}`).getTime());
-                    document.getElementById("next-session-name-fullscreen").textContent = nextSession.name;
+                    document.getElementById("next-session-name-fullscreen").textContent = formatSessionName(nextSession.name);
                 } else {
                     document.getElementById("next-session-name-fullscreen").textContent = "No upcoming session";
                     if (fullscreenNextSession) fullscreenNextSession.querySelector('.time').textContent = '';
@@ -1135,7 +1142,7 @@ margin-top: -0px;
                     fullscreenCurrentSession.classList.remove("hidden"); // Ensure it's visible
                     updateTimer(fullscreenCurrentSession, new Date(`${currentSession.date}T${currentSession.endTime}`).getTime());
                     const currentNameEl = document.getElementById("current-session-name-fullscreen");
-                    currentNameEl.textContent = currentSession.name;
+                    currentNameEl.textContent = formatSessionName(currentSession.name);
                     shrinkToFit(fullscreenCurrentSession, currentNameEl, "--current-name-size");
                 } else {
                     fullscreenCurrentSession.classList.add("hidden"); // Hide if no current session
@@ -1157,7 +1164,7 @@ margin-top: -0px;
                     const sessionItem = document.createElement("div");
                     sessionItem.classList.add("upcoming-session-item");
                     sessionItem.innerHTML = `
-                        <div class="session-name">${session.name}</div>
+                        <div class="session-name">${formatSessionName(session.name)}</div>
                         <div class="time"></div>
                     `;
                     // Exclude seconds for upcoming sessions
