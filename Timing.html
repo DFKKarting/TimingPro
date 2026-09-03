@@ -1207,10 +1207,14 @@ margin-top: -0px;
             if (!m) return c;
             const hour = parseInt(m[1], 10), minute = parseInt(m[2], 10);
             if (hour > 23 || minute > 59) return c;
-            return `${hour}:${String(minute).padStart(2, '0')}`;
+            return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
         }
 
         const SCHEDULE_TIME_RANGE_FRAGMENT_RE = /\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}/;
+        // A cell that is ENTIRELY "HH:MM - HH:MM" or "HH.MM - HH.MM" (dot-
+        // separated times, seen on some organizers' schedules) - a clean,
+        // unambiguous From/To slot living in a single fragment.
+        const SCHEDULE_TIME_RANGE_CELL_RE = /^(\d{1,2})[.:](\d{2})\s*-\s*(\d{1,2})[.:](\d{2})$/;
         const SCHEDULE_DURATION_RE = /(\d+)\s*(?:min|minutes|')\s*(\+\s*1\s*lap)?/i;
         // Strips the duration/lap suffix from a name fragment for display,
         // e.g. "Qualifying Heat / 10 min + 1 Lap" -> "Qualifying Heat".
@@ -1223,6 +1227,11 @@ margin-top: -0px;
         // Free-floating legend text outside any real table (e.g. an "engine
         // warm-up time slots" box) tends to read as "for Heat 1", "for Final".
         const SCHEDULE_LEGEND_FRAGMENT_RE = /^for\s/i;
+        // A cell that is only a leftover "Session 2" or "12 min" column
+        // label (from a block-spanning column clustering attached to one
+        // particular sub-row) - not real content, since the group/class
+        // name already identifies the row.
+        const SCHEDULE_COLUMN_LABEL_RE = /^(session\s*\d*|\d+\s*min)$/i;
 
         // English, Dutch and French month names - schedules for this event
         // series mix all three, and future events/organizers may too.
@@ -1232,6 +1241,8 @@ margin-top: -0px;
             janvier: 1, février: 2, mars: 3, avril: 4, mai: 5, juin: 6, juillet: 7, août: 8, septembre: 9, octobre: 10, novembre: 11, décembre: 12,
         };
         const SCHEDULE_DATE_TEXT_RE = new RegExp("(\\d{4})\\s+(" + Object.keys(SCHEDULE_MONTHS).join("|") + ")\\s+(\\d{1,2})(?:st|nd|rd|th)?", "gi");
+        // English-style "Month Day, Year" order (e.g. "September 4. 2026").
+        const SCHEDULE_DATE_TEXT_MDY_RE = new RegExp("(" + Object.keys(SCHEDULE_MONTHS).join("|") + ")\\s+(\\d{1,2})(?:st|nd|rd|th)?\\.?,?\\s+(\\d{4})", "gi");
         // Purely numeric dates: 23/07/2026, 23-07-2026, or 2026-07-23.
         const SCHEDULE_DATE_NUMERIC_RE = /\b(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})\b|\b(\d{4})-(\d{2})-(\d{2})\b/g;
 
@@ -1243,6 +1254,15 @@ margin-top: -0px;
                 const month = SCHEDULE_MONTHS[m[2].toLowerCase()];
                 last = `${m[1]}-${String(month).padStart(2, '0')}-${String(parseInt(m[3], 10)).padStart(2, '0')}`;
                 lastIndex = m.index;
+            }
+            SCHEDULE_DATE_TEXT_MDY_RE.lastIndex = 0;
+            let m3;
+            while ((m3 = SCHEDULE_DATE_TEXT_MDY_RE.exec(t)) !== null) {
+                const month = SCHEDULE_MONTHS[m3[1].toLowerCase()];
+                if (m3.index > lastIndex) {
+                    last = `${m3[3]}-${String(month).padStart(2, '0')}-${String(parseInt(m3[2], 10)).padStart(2, '0')}`;
+                    lastIndex = m3.index;
+                }
             }
             let m2, lastNumeric = null, lastNumericIndex = -1;
             SCHEDULE_DATE_NUMERIC_RE.lastIndex = 0;
@@ -1311,15 +1331,22 @@ margin-top: -0px;
         const PRE_GRID_OPEN_MINUTES_BEFORE_CLOSE = 15;
 
         function processScheduleRow(cells, currentDate) {
-            const times = [], texts = [];
+            const times = [], texts = [], rangeCells = [];
             for (const raw of cells) {
                 const c = (raw || "").trim();
                 if (!c) continue;
+                const rm = SCHEDULE_TIME_RANGE_CELL_RE.exec(c);
+                if (rm) {
+                    const h1 = String(parseInt(rm[1], 10)).padStart(2, '0');
+                    const h2 = String(parseInt(rm[3], 10)).padStart(2, '0');
+                    rangeCells.push([`${h1}:${rm[2]}`, `${h2}:${rm[4]}`]);
+                    continue;
+                }
                 const normalized = normalizeTimeToken(c);
                 if (SCHEDULE_TIME_RE.test(normalized)) times.push(normalized);
                 else if (c.toUpperCase() !== "X") texts.push(c.replace(/\s+/g, " "));
             }
-            if (!times.length || !texts.length) return [];
+            if ((!times.length && !rangeCells.length) || !texts.length) return [];
 
             const kept = [];
             for (const t of texts) {
@@ -1327,6 +1354,7 @@ margin-top: -0px;
                 if (SCHEDULE_SKIP_KEYWORDS.some(kw => lt.includes(kw))) continue;
                 if (SCHEDULE_TIME_RANGE_FRAGMENT_RE.test(t)) continue;
                 if (SCHEDULE_LEGEND_FRAGMENT_RE.test(t)) continue;
+                if (SCHEDULE_COLUMN_LABEL_RE.test(t)) continue;
                 kept.push(t);
             }
             if (!kept.length) return [];
@@ -1341,17 +1369,42 @@ margin-top: -0px;
             const displayName = ([...new Set(displayFragments)].join(" | ") || name).replace(/,/g, " ");
             let start, end, guessed = false, pregridClosing = null;
 
-            if (times.length >= 2 && scheduleTimeToMinutes(times[1]) > scheduleTimeToMinutes(times[0])) {
+            // Standalone HH:MM cells are the trusted, long-proven signal -
+            // an "X - Y" range cell is only trusted as a fallback when a row
+            // has no standalone times at all, since a page can carry stray
+            // range-shaped text (e.g. an opening-hours note) that happens to
+            // land in the same row by y-coincidence and must be ignored.
+            if (!times.length && rangeCells.length) {
+                // A row can carry more than one "X - Y" cell (e.g. an overall
+                // block range plus one group's specific sub-slot within it) -
+                // the last one, i.e. the most specific/rightmost column, is
+                // the real slot.
+                [start, end] = rangeCells[rangeCells.length - 1];
+                guessed = !currentDate;
+            } else if (times.length >= 2 && scheduleTimeToMinutes(times[1]) > scheduleTimeToMinutes(times[0])) {
                 start = times[0];
                 end = times[1];
             } else if (times.length >= 2) {
                 start = times[0];
-                end = addMinutesToTime(start, parseScheduleDurationMinutes(name) ?? 12);
                 guessed = true;
                 // Column order on these rows is From, Servicing Parc Open,
                 // Pre-grid Closing, Mechanics Out - times[2] is the deadline
-                // used below for the "Pre-grid Open" entry's end time.
-                if (times.length >= 3) pregridClosing = times[2];
+                // used below for the "Pre-grid Open" entry's end time, but
+                // only if it actually falls between Servicing Parc Open and
+                // the Start time - some organizers instead write the
+                // session's duration in clock form ("05:00" for "5 minutes")
+                // in that same column, which looks like a time but isn't one.
+                if (times.length >= 3 &&
+                    scheduleTimeToMinutes(times[1]) <= scheduleTimeToMinutes(times[2]) &&
+                    scheduleTimeToMinutes(times[2]) <= scheduleTimeToMinutes(times[0])) {
+                    pregridClosing = times[2];
+                    end = addMinutesToTime(start, parseScheduleDurationMinutes(name) ?? 12);
+                } else if (times.length >= 3) {
+                    const impliedMinutes = parseInt(times[2].split(":")[0], 10);
+                    end = addMinutesToTime(start, isNaN(impliedMinutes) ? 12 : impliedMinutes);
+                } else {
+                    end = addMinutesToTime(start, parseScheduleDurationMinutes(name) ?? 12);
+                }
             } else {
                 start = times[0];
                 end = addMinutesToTime(start, parseScheduleDurationMinutes(name) ?? 30);
