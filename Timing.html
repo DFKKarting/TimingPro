@@ -867,6 +867,9 @@ margin-top: -0px;
             .upcoming-session-item .session-name, .upcoming-session-item .time { font-size: var(--upcoming-font-size, 2.4vw); }
             .control-buttons button { font-size: 2.6vw; padding: 3px 8px; }
         }
+
+        /* Fullscreen does not work on phones, so hide the button there */
+        @media (max-width: 768px) and (pointer: coarse) { .fullscreen-btn { display: none; } }
     </style>
 </head>
 <body>
@@ -877,7 +880,7 @@ margin-top: -0px;
     <div class="checkered-divider"></div>
 
     <div class="control-buttons">
-        <button onclick="toggleFullscreen()">Fullscreen</button>
+        <button class="fullscreen-btn" onclick="toggleFullscreen()">Fullscreen</button>
         <button id="admin-toggle-btn" onclick="openAdminArea()">Admin</button>
     </div>
 
