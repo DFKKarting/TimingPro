@@ -853,6 +853,20 @@ margin-top: -0px;
         .fx-page::after { background: linear-gradient(115deg, transparent 45%, rgba(255,255,255,0.06) 50%, transparent 55%); }
         .fx-page .ghost { -webkit-text-stroke: 1px rgba(255,255,255,0.12); font-size: clamp(70px, 14vh, 190px); }
         .progress-fill::after { display: none !important; }
+
+        /* ===== Phones: scale titles with the screen width so nothing is cut off ===== */
+        @media (max-width: 768px) {
+            .fullscreen-timer-current-time h2 { font-size: 3.4vw !important; letter-spacing: 1px !important; }
+            .fullscreen-timer-current-time .time { font-size: 7.5vw !important; }
+            .fullscreen-timer-current-time img { max-width: 20vw; }
+            #fullscreen-next-session h2 { font-size: 3.6vw !important; letter-spacing: 1.5px !important; padding: 0.3em 0.8em; margin-bottom: 1.2vh; }
+            #fullscreen-current-session h2, #upcoming-sessions-container h2 {
+                font-size: 2.9vw !important; letter-spacing: 0.5px !important; white-space: normal; text-align: center; line-height: 1.15; }
+            #fullscreen-current-session h2::before, #upcoming-sessions-container h2::before, .fullscreen-timer-current-time h2::before { margin-right: 0.35em; }
+            .live-dot { margin-right: 0.35em; }
+            .upcoming-session-item .session-name, .upcoming-session-item .time { font-size: var(--upcoming-font-size, 2.4vw); }
+            .control-buttons button { font-size: 2.6vw; padding: 3px 8px; }
+        }
     </style>
 </head>
 <body>
